@@ -1,0 +1,53 @@
+# 🔹 Python (FastAPI + AI Server)
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+*.log
+*.sqlite
+*.db
+*.sqlite3
+.DS_Store
+.idea/
+.vscode/
+.ipynb_checkpoints/
+
+# 🔹 FastAPI
+.env
+.env.local
+*.secrets
+config.yaml
+config.json
+
+# 🔹 Hugging Face
+~/.cache/huggingface/
+huggingface_cache/
+models/
+checkpoints/
+
+# 🔹 PyTorch & TensorFlow
+*.h5
+*.pt
+*.ckpt
+*.onnx
+*.tflite
+
+# 🔹 Node.js (React)
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn.lock
+package-lock.json
+
+# 🔹 React Build
+frontend/build/
+
+# 🔹 Logs & etc.
+logs/
+*.log
+nohup.out
+debug.log
+coverage/
