@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+from database import engine, Base
 
 
 app = FastAPI()
@@ -23,6 +24,13 @@ def read_root():
 @app.get("/api/test")
 def test_api():
     return {"message": "API is working!"}
+
+
+try:
+    Base.metadata.create_all(bind=engine)
+    print("✅ Database initialized successfully!")
+except Exception as e:
+    print(f"⚠️ Database initialization failed: {e}")
 
 
 if __name__ == "__main__":
