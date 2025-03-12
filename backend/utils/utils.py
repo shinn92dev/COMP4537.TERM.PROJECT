@@ -9,7 +9,7 @@ class Utils:
 
     def get_weather(self, lat: float, lon: float) -> dict:
         key = os.getenv("OPEN_WEATHER_API_KEY")
-        url =f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={key}"
+        url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={key}"
         response = requests.get(url)
         data = response.json()
         print(data)
