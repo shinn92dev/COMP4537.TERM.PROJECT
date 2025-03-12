@@ -6,10 +6,11 @@ from dotenv import load_dotenv
 class Utils:
     def __init__(self) -> None:
         load_dotenv()
+        self.weather_url = "https://api.openweathermap.org/data/2.5/weather?"
 
     def get_weather(self, lat: float, lon: float) -> dict:
         key = os.getenv("OPEN_WEATHER_API_KEY")
-        url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={key}"
+        url = self.weather_url + f"lat={lat}&lon={lon}&appid={key}"
         response = requests.get(url)
         data = response.json()
         print(data)
