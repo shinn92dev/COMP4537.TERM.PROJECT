@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean
 from sqlalchemy.sql import func
 from database import Base
 
@@ -7,8 +7,9 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True, unique=True)
     email = Column(String, unique=True, index=True)
-    name = Column(String, nullable=False)
+    username = Column(String, nullable=False)
     password = Column(String, nullable=False)
+    is_admin = Column(Boolean, nullable=False)
 
 
 class APIKey(Base):
@@ -26,7 +27,8 @@ class APIUsage(Base):
         Integer, ForeignKey("users.id"),
         primary_key=True, index=True, unique=True
         )
-    usage = Column(Integer, default=0, nullable=False)
+    count = Column(Integer, default=0, nullable=False)
+    method = Column(String, nullable=False)
 
 
 class Token(Base):
