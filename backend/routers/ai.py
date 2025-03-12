@@ -33,7 +33,13 @@ def ask_to_ai(prompt=None):
     )
 
     decoded_output = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    print(decoded_output)
+    return decoded_output
 
 
-ask_to_ai()
+@router.get("/")
+def return_ai_answer(prompt: str = None):
+    answer = ask_to_ai(prompt)
+    return {
+        "prompt": prompt,
+        "result": answer
+    }
