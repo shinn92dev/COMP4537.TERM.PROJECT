@@ -51,3 +51,6 @@ logs/
 nohup.out
 debug.log
 coverage/
+
+# AI Models
+ai_models/
