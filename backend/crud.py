@@ -105,3 +105,18 @@ class DBController:
             )
         finally:
             db.close()
+
+    def delete_api_key(user_id: int, api_key: str):
+        db = SessionLocal()
+        try:
+            matching = db.query(APIKey).filter(
+                APIKey.id == user_id, APIKey.key == api_key
+                ).first()
+
+            if matching:
+                db.delete(matching)
+                db.commit()
+                return True
+            return False
+        finally:
+            db.close()
