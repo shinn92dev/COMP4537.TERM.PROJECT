@@ -87,3 +87,11 @@ class DBController:
             return None
         finally:
             db.close()
+
+    def get_api_key_by_user_id(self, user_id):
+        db = SessionLocal()
+        try:
+            key = db.query(APIKey).filter(APIKey.id == user_id).first()
+            return key.key if key else None
+        finally:
+            db.close()
