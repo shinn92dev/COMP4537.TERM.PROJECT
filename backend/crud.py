@@ -16,21 +16,6 @@ class DBController:
         finally:
             db.close()
 
-    def insert_new_user(self, email, username, password, is_admin):
-        db: Session = SessionLocal()
-        try:
-            new_user = User(
-                email=email, username=username, password=password, is_admin=is_admin
-                )
-            db.add(new_user)
-            db.commit()
-            print("✅ New user data inserted successfully.")
-        except Exception as e:
-            db.rollback()
-            print(f"⚠️ New user data insertion failed: {e}")
-        finally:
-            db.close()
-
     def insert_data(self, table, **data):
         db: Session = SessionLocal()
         try:
@@ -57,15 +42,15 @@ class DBController:
         except Exception as e:
             db.rollback()
             return {
-                "success": False, 
-                "error": "Exception", 
+                "success": False,
+                "error": "Exception",
                 "message": str(e)
                 }
         finally:
             db.close()
-    
+
     def select_all_user(self):
-        db: Session = SessionLocal() 
+        db: Session = SessionLocal()
         try:
             users = db.query(User).all()
             return users
@@ -84,6 +69,7 @@ class DBController:
                 return False
         except Exception as e:
             print(f"❌ Could not check api key list: {e}")
+            return None
         finally:
             db.close()
 
@@ -101,7 +87,3 @@ class DBController:
             return None
         finally:
             db.close()
-
-
-d = DBController()
-print(d.insert_data(APIKey, id=1, key="qwert"))

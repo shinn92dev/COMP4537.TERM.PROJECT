@@ -77,10 +77,11 @@ class Govee():
 
 def main():
     g = Govee(key)
-    for i in (range(5)):
-        condition = True if i % 2 == 0 else False
-        g.turn_on_and_off(1, condition)
-        time.sleep(2)
+    g.turn_on_and_off(1, False)
+    # for i in (range(5)):
+    #     condition = True if i % 2 == 0 else False
+    #     g.turn_on_and_off(1, condition)
+    #     time.sleep(2)
 
 
 if __name__ == "__main__":
