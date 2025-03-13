@@ -1,5 +1,5 @@
 import uuid
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel
 from crud import DBController
 from models import APIKey
@@ -49,17 +49,42 @@ def generate_api_key(body: GenerateAPIKeyRequest):
     }
 
 
+class DeleteAPIKeyRequest(BaseModel):
+    user_id: int
+
+
 @router.get("/get-key")
 def get_api_key(user_id: int):
     api_key = dbController.get_api_key_by_user_id(user_id)
     if not api_key:
-        raise HTTPException(status_code=404, detail="API key not found for this user.")
+        raise HTTPException(
+            status_code=404, detail="API key not found for this user."
+            )
     return {"success": True, "key": api_key}
 
 
+@router.delete("/delete-key")
+def delete_api_key(body: DeleteAPIKeyRequest, api_key: str = Header(None)):
+    if not api_key:
+        raise HTTPException(
+            status_code=400, detail="API Key is required in the header."
+            )
+    is_valid_key = dbController.is_valid_api_key(api_key)
+    if not is_valid_key:
+        raise HTTPException(
+            status_code=403, detail="Invalid API Key for this user."
+            )
+    result = dbController.delete_api_key(body.user_id, api_key)
+    if not result:
+        raise HTTPException(
+            status_code=404,
+            detail="Matching API Key not found for this user to delete."
+            )
+    return {"success": True, "message": "API Key deleted successfully."}
+
+
 def main():
-    api_key = str(uuid.uuid4())
-    print(api_key)
+    pass
 
 
 if __name__ == "__main__":
