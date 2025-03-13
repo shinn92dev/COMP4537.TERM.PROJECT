@@ -95,3 +95,13 @@ class DBController:
             return key.key if key else None
         finally:
             db.close()
+
+    def is_valid_api_key(api_key: str):
+        db = SessionLocal()
+        try:
+            return (
+                db.query(APIKey)
+                .filter(APIKey.key == api_key).first() is not None
+            )
+        finally:
+            db.close()
