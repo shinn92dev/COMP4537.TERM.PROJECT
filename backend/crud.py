@@ -81,7 +81,7 @@ class DBController:
             if not user:
                 print(f"⚠No user found with email: {email}")
                 return None
-            return user.id
+            return user.user_id
         except Exception as e:
             print(f"❌Error during finding user id by email: {e}")
             return None
@@ -91,7 +91,7 @@ class DBController:
     def get_api_key_by_user_id(self, user_id):
         db = SessionLocal()
         try:
-            key = db.query(APIKey).filter(APIKey.id == user_id).first()
+            key = db.query(APIKey).filter(APIKey.user_id == user_id).first()
             return key.key if key else None
         finally:
             db.close()
@@ -110,7 +110,7 @@ class DBController:
         db = SessionLocal()
         try:
             matching = db.query(APIKey).filter(
-                APIKey.id == user_id, APIKey.key == api_key
+                APIKey.user_id == user_id, APIKey.key == api_key
                 ).first()
 
             if matching:
