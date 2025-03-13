@@ -1,11 +1,14 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean
-from sqlalchemy.sql import func
+import enum
 from database import Base
+from sqlalchemy import (Column, Integer, String,
+                        ForeignKey, DateTime, Boolean, Enum)
+from sqlalchemy.sql import func
 
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True, unique=True)
+
+    user_id = Column(Integer, primary_key=True, index=True, unique=True)
     email = Column(String, unique=True, index=True)
     username = Column(String, nullable=False)
     password = Column(String, nullable=False)
@@ -14,27 +17,42 @@ class User(Base):
 
 class APIKey(Base):
     __tablename__ = "api_keys"
-    id = Column(
-        Integer, ForeignKey("users.id"),
-        primary_key=True, index=True, unique=True
+
+    key_id = Column(Integer, index=True, unique=True, primary_key=True)
+    user_id = Column(
+        Integer, ForeignKey("users.user_id"),
+        index=True, nullable=False
         )
-    key = Column(String, unique=True, nullable=True)
+    key = Column(String, unique=True, nullable=False)
+
+
+class HTTPMethodEnum(enum.Enum):
+    GET = "GET"
+    POST = "POST"
+    PUT = "PUT"
+    DELETE = "DELETE"
+    PATCH = "PATCH"
+    HEAD = "HEAD"
+    OPTIONS = "OPTIONS"
 
 
 class APIUsage(Base):
     __tablename__ = "api_usage"
-    id = Column(
-        Integer, ForeignKey("users.id"),
-        primary_key=True, index=True, unique=True
-        )
+
+    usage_id = Column(Integer, primary_key=True, index=True, unique=True)
+    key_id = Column(
+        Integer, ForeignKey("api_keys.key_id"),
+        nullable=False, index=True)
     count = Column(Integer, default=0, nullable=False)
-    method = Column(String, nullable=False)
+    method = Column(Enum(HTTPMethodEnum), nullable=False)
 
 
 class Token(Base):
     __tablename__ = "tokens"
 
-    id = Column(Integer, primary_key=True, index=True, unique=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(
+        Integer, ForeignKey("users.user_id"),
+        primary_key=True, nullable=False, unique=True
+        )
     token = Column(String, unique=True, index=True)
     expires_at = Column(DateTime, default=func.now(), nullable=False)
