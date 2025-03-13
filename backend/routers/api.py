@@ -1,8 +1,9 @@
 import uuid
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from crud import DBController
 from models import APIKey
+
 
 router = APIRouter()
 
@@ -46,6 +47,14 @@ def generate_api_key(body: GenerateAPIKeyRequest):
         "message":
         "Failed to generate a unique API Key after multiple attempts."
     }
+
+
+@router.get("/get-key")
+def get_api_key(user_id: int):
+    api_key = dbController.get_api_key_by_user_id(user_id)
+    if not api_key:
+        raise HTTPException(status_code=404, detail="API key not found for this user.")
+    return {"success": True, "key": api_key}
 
 
 def main():
