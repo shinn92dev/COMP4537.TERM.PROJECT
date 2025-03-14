@@ -12,9 +12,9 @@ const Dashboard = () => {
 
 
     return (
-        <section>
-            <h1>Dashboard</h1>
-            <p>Remaining API calls</p>
+        <section className="p-6">
+            <h1 className="text-xl font-bold mb-4">Dashboard</h1>
+            <p>Remaining API calls:</p>
         </section>
     )
 };
