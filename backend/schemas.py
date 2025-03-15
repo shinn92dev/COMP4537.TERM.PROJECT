@@ -7,8 +7,8 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    user_id: Union[str, None] = None
-    email: Union[str, None] = None
+    user_id: str | None = None
+    email: str | None = None
 
 
 class User(BaseModel):
