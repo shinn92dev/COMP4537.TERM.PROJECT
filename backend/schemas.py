@@ -7,16 +7,18 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    id: int | None = None
+    user_id: Union[str, None] = None
+    email: Union[str, None] = None
 
 
 class User(BaseModel):
-    name: str
+    user_id: int
     email: str | None = None
+    username: str | None = None
 
 
 class UserInDB(User):
-    password: str
+    hashed_password: str
 
 
 

@@ -2,7 +2,11 @@ from sqlalchemy.orm import Session
 from database import SessionLocal
 from models import User, APIKey
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from schemas import UserInDB
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class DBController:
@@ -120,3 +124,39 @@ class DBController:
             return False
         finally:
             db.close()
+
+    
+    def fetch_user_by_email(email: str):
+        with SessionLocal() as db:
+            try:
+                statement = select(User).where(User.email == email)
+                user = db.scalars(statement).first()
+                if not user:
+                    logger.warning(f"⚠No user found with email: {email}")
+                    return None
+                return UserInDB(**user.__dict__)
+            
+            except SQLAlchemyError as e:
+                logger.error(f"Database error: {e}")
+                return None
+            
+            except Exception as e:
+                logger.error(f"❌Unexpected server error: {e}")
+                return None
+            
+            
+    def fetch_user_by_user_id(user_id: int):
+        with SessionLocal() as db:
+            try:
+                statement = select(User).where(User.user_id == user_id)
+                user = db.scalars(statement).first()
+                if not user:
+                    logger.warning(f"⚠No user found with user id: {user_id}")
+                    return None
+                return UserInDB(**user.__dict__)
+            except SQLAlchemyError as e:
+                logger.error(f"Database error: {e}")
+                return None
+            except Exception as e:
+                logger.error(f"❌Unexpected server error: {e}")
+                return None

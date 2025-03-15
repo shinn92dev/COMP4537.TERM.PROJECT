@@ -1,6 +1,5 @@
 import bcrypt
-from backend.crud import get_user
-from backend.models import User
+from backend.crud import DBController
 
 
 def hash_password(password: str) -> str:
@@ -16,12 +15,12 @@ def verify_password(password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(encoded_password, encoded_hashed_password)
 
 
-def authenticate_user(db, email: int, password: str) -> User | bool:
-    user = get_user(db, email)
+def authenticate_user(email: str, password: str):
+    user = DBController.fetch_user_by_email(email)
 
     if not user:
         return False
-    if not verify_password(password, user.password):
+    if not verify_password(password, user.hashed_password):
         return False
 
     return user
