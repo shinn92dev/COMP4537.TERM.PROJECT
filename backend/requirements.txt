@@ -42,6 +42,7 @@ orjson==3.10.15
 oyaml==1.0
 packaging==24.2
 pexpect==4.9.0
+pillow==11.1.0
 propcache==0.3.0
 ptyprocess==0.7.0
 pycparser==2.22
@@ -51,6 +52,7 @@ pydantic-settings==2.8.1
 pydantic_core==2.27.2
 pygatt==5.0.0
 Pygments==2.19.1
+PyJWT==2.10.1
 pyserial==3.5
 python-dotenv==1.0.1
 python-multipart==0.0.20
@@ -69,6 +71,8 @@ starlette==0.46.1
 sympy==1.13.1
 tokenizers==0.21.0
 torch==2.6.0
+torchaudio==2.6.0
+torchvision==0.21.0
 tqdm==4.67.1
 transformers==4.49.0
 typer==0.15.2

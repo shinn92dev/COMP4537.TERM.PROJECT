@@ -1,5 +1,5 @@
 import bcrypt
-from backend.crud import DBController
+from crud import DBController
 
 
 def hash_password(password: str) -> str:

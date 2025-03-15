@@ -6,13 +6,16 @@ from typing import Annotated, Union
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from backend.crud import DBController
-from backend.schemas import TokenData
+from crud import DBController
+from schemas import TokenData
 
-load_dotenv("../.env")
+load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
+
+print("hello")
+print(SECRET_KEY)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
