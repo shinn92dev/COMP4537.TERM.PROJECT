@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
-from routers import ai, test, api, login
+from routers import ai, test, api, auth
 import models  # noqa: F401
 
 
@@ -21,7 +21,7 @@ def create_app():
     app.include_router(test.router)
     app.include_router(ai.router, prefix="/ai", tags=["Ai"])
     app.include_router(api.router, prefix="/api", tags=["api"])
-    app.include_router(login.router, prefix="/login", tags=["login"])
+    app.include_router(auth.router, prefix="/auth", tags=["auth"])
 
     # Initialize Database
     try:

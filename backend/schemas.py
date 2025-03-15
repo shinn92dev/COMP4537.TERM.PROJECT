@@ -15,6 +15,7 @@ class User(BaseModel):
     user_id: int
     email: str | None = None
     username: str | None = None
+    is_admin: bool | None = None
 
 
 class UserInDB(User):
