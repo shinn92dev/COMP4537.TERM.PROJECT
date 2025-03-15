@@ -16,8 +16,8 @@ env/
 .ipynb_checkpoints/
 
 # 🔹 FastAPI
-.env
-.env.local
+backend/.env
+backend/.env
 *.secrets
 config.yaml
 config.json
