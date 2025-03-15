@@ -28,7 +28,7 @@ def insert_new_user(email, name, password):
 
 
 def select_all_user():
-    db: Session = SessionLocal() 
+    db: Session = SessionLocal()
     try:
         users = db.query(User).all()
         return users
@@ -36,3 +36,7 @@ def select_all_user():
         print(f"⚠️ Data select failed: {e}")
     finally:
         db.close()
+
+
+def get_user(db: Session, email: int) -> User | None:
+    return db.query(User).filter(email == User.email).first()

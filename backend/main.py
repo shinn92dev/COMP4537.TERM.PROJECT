@@ -1,8 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordRequestForm
 import uvicorn
-from database import engine, Base
-import models
+from sqlalchemy.orm import Session
+from database import engine, Base, SessionLocal
+from typing import Annotated
+from utils.auth import authenticate_user
 
 
 app = FastAPI()
@@ -32,6 +35,11 @@ try:
     print("✅ Database initialized successfully!")
 except Exception as e:
     print(f"⚠️ Database initialization failed: {e}")
+
+
+@app.post("/token")
+async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Session = Depends(SessionLocal)):
+    user = authenticate_user(db, form_data.username)
 
 
 if __name__ == "__main__":
