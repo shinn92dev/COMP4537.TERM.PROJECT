@@ -10,7 +10,7 @@ from crud import DBController
 from schemas import TokenData
 
 load_dotenv()
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY") if os.getenv("SECRET_KEY") else "asdfjkhaksjd"
 ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
