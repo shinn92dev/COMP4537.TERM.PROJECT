@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = "http://localhost:8000/lumisenseai/api/v1";
 
 export const login = async (prevState: string | null, formData: FormData) => {
     // Convert FormData to URLSearchParams for FastAPI OAuth2 compatibility
