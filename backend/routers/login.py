@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Header, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
 from utils.auth import authenticate_user
@@ -11,7 +11,11 @@ router = APIRouter()
 
 
 @router.post("/token")
-async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+async def login_for_access_token(
+    form_data: Annotated[
+        OAuth2PasswordRequestForm,
+        Depends()
+        ]):
     user = authenticate_user(form_data.email, form_data.password)
 
     if not user:
