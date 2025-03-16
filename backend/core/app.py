@@ -25,14 +25,16 @@ def create_app():
     # Register Each Service
 
     app.include_router(test.router)
-    app.include_router(ai.router, prefix="/ai", tags=["Ai"])
-    app.include_router(api.router, prefix="/api", tags=["api"])
-    app.include_router(auth.router, prefix="/auth", tags=["auth"])
-    app.include_router(auth.router, prefix="/users", tags=["users"])
+    app.include_router(ai.router, prefix="/{BASE_URL}//ai", tags=["Ai"])
+    app.include_router(api.router, prefix="/{BASE_URL}//api", tags=["api"])
+    app.include_router(auth.router, prefix="/{BASE_URL}//auth", tags=["auth"])
+    app.include_router(
+        auth.router, prefix="/{BASE_URL}//users", tags=["users"]
+        )
     app.include_router(register.router, tags=["register"])
     app.include_router(
         user_dashboard.router,
-        prefix=f"{BASE_URL}/user-dashboard",
+        prefix=f"/{BASE_URL}/user-dashboard",
         tags=["User Dashboard"]
         )
 
