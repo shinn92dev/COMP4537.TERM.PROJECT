@@ -9,11 +9,28 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useActionState } from "react"
+import { login } from "@/lib/auth"
+import { useEffect } from "react"
+import { useNavigate } from "react-router"
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const navigate = useNavigate();
+  const [result, formAction, pending] = useActionState(login, null);
+  
+  // Handle successful login
+  useEffect(() => {
+    if (result && typeof result === 'object' && 'success' in result) {
+      navigate('/dashboard');
+    }
+  }, [result, navigate]);
+
+  // Determine if we have an error message
+  const errorMessage = typeof result === 'string' ? result : null;
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -24,12 +41,13 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form action={formAction}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
+                  name="email"
                   type="email"
                   placeholder="m@example.com"
                   required
@@ -45,10 +63,13 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" name="password" type="password" required />
               </div>
-              <Button type="submit" className="w-full">
-                Login
+              {errorMessage && (
+                <div className="text-sm text-red-500">{errorMessage}</div>
+              )}
+              <Button type="submit" disabled={pending} className="w-full">
+                {pending ? "Logging in..." : "Login"}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
