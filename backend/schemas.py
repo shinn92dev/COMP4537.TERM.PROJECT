@@ -22,6 +22,7 @@ class User(BaseModel):
 class UserInDB(User):
     password: str
 
+
 class UserDashboardResponse(BaseModel):
     username: str
     email: str
