@@ -24,7 +24,7 @@ export function LoginForm({
   // Handle successful login
   useEffect(() => {
     if (result && typeof result === 'object' && 'success' in result) {
-      navigate('/dashboard');
+      navigate('/userDashboard');
     }
   }, [result, navigate]);
 

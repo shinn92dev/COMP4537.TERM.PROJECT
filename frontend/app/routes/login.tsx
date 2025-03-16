@@ -18,7 +18,7 @@ const Login = () => {
         // Check if the access_token cookie exists
         const hasToken = document.cookie.includes('access_token');
         if (hasToken) {
-            navigate('/dashboard');
+            navigate('/userDashboard');
         }
     }, [navigate]);
 
