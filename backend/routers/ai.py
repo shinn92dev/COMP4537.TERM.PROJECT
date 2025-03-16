@@ -114,7 +114,7 @@ async def return_ai_answer(request: ColorRequest):
         print("❌ Unexpected error:", e)
         raise HTTPException(status_code=500, detail="Internal server error")
 
-D
+
 def main():
     prompt = (
         "emotion: happy, weather: rainy, location: vancouver, "
