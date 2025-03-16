@@ -1,6 +1,6 @@
 import json
 import requests
-import datetime
+from datetime import datetime
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
@@ -18,7 +18,7 @@ def ask_to_ai(prompt: str):
             "prompt": prompt,
             "stream": False
         }
-        response = requests.post(OLLAMA_URL, json=payload)
+        response = requests.post(OLLAMA_URL, json=payload, timeout=6000)
 
         if response.status_code == 200:
             result = response.json().get("response", "")
@@ -114,7 +114,7 @@ async def return_ai_answer(request: ColorRequest):
         print("❌ Unexpected error:", e)
         raise HTTPException(status_code=500, detail="Internal server error")
 
-
+D
 def main():
     prompt = (
         "emotion: happy, weather: rainy, location: vancouver, "
