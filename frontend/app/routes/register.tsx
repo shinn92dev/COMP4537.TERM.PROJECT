@@ -15,7 +15,7 @@ import {Input} from "~/components/ui/input"
 import {zodResolver} from "@hookform/resolvers/zod"
 import {useForm} from "react-hook-form"
 import {z} from "zod"
-import {useState} from "react";
+import {register} from "~/lib/register";
 
 
 const formSchema = z.object({
@@ -51,11 +51,21 @@ const Register = () => {
         },
     })
 
-    const onSubmit = (data: z.infer<typeof formSchema>) => {
+    const onSubmit = async (data: z.infer<typeof formSchema>) => {
         const userInfo = {
-            "userName": data.username,
+            "username": data.username,
             "email": data.email,
             "password": data.password
+        };
+        let response;
+        try {
+            response = await register(userInfo);
+            console.log(response.message);
+
+        }
+        catch (error){
+            response = {"message":false};
+            console.log(response.message);
         }
     }
     return (
