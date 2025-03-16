@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Users, CheckCircle, Circle, Cloud } from "lucide-react";
+import { Users, CheckCircle, Circle } from "lucide-react";
 
 import {
     Card,
@@ -52,15 +52,10 @@ const userDashboard = () => {
                 <Card className="p-4 shadow-lg">
                     <CardHeader className="flex justify-between items-center">
                         <CardTitle>Remaining Requests</CardTitle>
-                        {userData?.remainingRequests > 0 ? (
-                            <CheckCircle className="w-5 h-5 text-green-500" />
-                        ) : (
-                            <Circle className="w-5 h-5 text-red-500" />
-                        )}
                     </CardHeader>
                     <CardContent>
                         <p className="text-2xl font-bold">{userData?.remainingRequests}</p>
-                        <CardDescription>You have requested #{userData?.requestLimit - userData?.remainingRequests} times so far</CardDescription>
+                        <CardDescription>You have requested # times so far</CardDescription>
                     </CardContent>
                 </Card>
             </div>
