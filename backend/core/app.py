@@ -9,6 +9,8 @@ import models  # noqa: F401
 load_dotenv()
 BASE_URL = os.getenv("BASE_PREFIX", "")
 
+print(f"🔴🟥Debugging base url: {BASE_URL}")
+
 
 def create_app():
     app = FastAPI()
