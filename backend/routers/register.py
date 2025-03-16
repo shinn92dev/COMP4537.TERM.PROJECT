@@ -8,10 +8,12 @@ dbController = DBController()
 
 router = APIRouter()
 
+
 class UserRegister(BaseModel):
     username: str
     email: str
     password: str
+
 
 @router.post("/register")
 async def register(user_info: UserRegister):
@@ -29,4 +31,3 @@ async def register(user_info: UserRegister):
         return {"message": response["message"]}
 
     return {"message": response["error"]}
-
