@@ -9,6 +9,8 @@ import models  # noqa: F401
 load_dotenv()
 BASE_URL = os.getenv("BASE_PREFIX", "")
 
+print(f"🔴🟥Debugging base url: {BASE_URL}")
+
 
 def create_app():
     app = FastAPI()
@@ -30,7 +32,11 @@ def create_app():
     app.include_router(auth.router, prefix=f"{BASE_URL}/auth", tags=["auth"])
     app.include_router(auth.router, prefix=f"{BASE_URL}/users", tags=["users"])
     app.include_router(register.router, prefix=f"{BASE_URL}", tags=["register"])
-    app.include_router(user_dashboard.router, prefix=f"{BASE_URL}/user-dashboard", tags=["User Dashboard"])
+    app.include_router(
+        user_dashboard.router,
+        prefix=f"/{BASE_URL}/user-dashboard",
+        tags=["User Dashboard"]
+        )
 
     # Initialize Database
     try:
