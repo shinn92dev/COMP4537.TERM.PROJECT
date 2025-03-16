@@ -1,39 +1,32 @@
 import os
 from fastapi import APIRouter
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import requests
+import json
 
 router = APIRouter()
 
-# Load Google FLAN-T5 Model
-model_path = os.path.abspath("../ai_models")
-os.environ["HUGGINGFACE_HUB_CACHE"] = model_path
+
+OLLAMA_URL = "http://localhost:11434/api/generate"
 
 
-MODEL_NAME = "google/flan-t5-large"
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, cache_dir=model_path)
-model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME, cache_dir=model_path)
-print(f"✅ Model downloaded and saved in {model_path}")
+def ask_to_ai(prompt: str):
+    payload = {
+        "model": "mistral",
+        "prompt": prompt,
+        "stream": False
+    }
+    response = requests.post(OLLAMA_URL, json=payload)
 
-
-def ask_to_ai(prompt=None):
-    # Define the input prompt
-    if not prompt:
-        prompt = "Hello. Let me know one fun fact that I might not know."
-    input_ids = tokenizer(prompt, return_tensors="pt").input_ids
-
-    outputs = model.generate(
-        input_ids,
-        do_sample=True,
-        max_length=100,
-        temperature=0.7,
-        top_p=0.9,
-        num_return_sequences=1,
-        eos_token_id=tokenizer.eos_token_id
-    )
-
-    decoded_output = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    return decoded_output
+    if response.status_code == 200:
+        result = response.json()["response"]
+        try:
+            final_result = json.loads(result)
+            return final_result
+        except Exception as e:
+            return {"error": f"Failed to generate response {e}"}
+    else:
+        return {"error": "Failed to generate response"}
 
 
 @router.get("/")
@@ -43,3 +36,13 @@ def return_ai_answer(prompt: str = None):
         "prompt": prompt,
         "result": answer
     }
+
+
+def main():
+    prompt = "emotion: happy, weather: rainy, location: vancouver, time: 6:49. Based on this, recommend color for light in HEX, reason, and the one advice. Format the answer in JSON format like this. {{'color': answer, 'reason': reason, 'advice': advice}}"
+    answer = ask_to_ai(prompt)
+    print(answer)
+
+
+if __name__ == "__main__":
+    main()
