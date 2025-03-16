@@ -2,9 +2,9 @@ from datetime import datetime, timedelta, timezone
 import os
 from dotenv import load_dotenv
 import jwt
-from typing import Annotated
+# from typing import Annotated
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
-from fastapi import Depends, HTTPException, status, Request
+from fastapi import HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from crud import DBController
 from schemas import TokenData
