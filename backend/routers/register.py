@@ -20,6 +20,8 @@ async def register(user_info: UserRegister):
     username = user_info.username
     email = user_info.email
     hashed_password = auth.hash_password(user_info.password)
+
+    print(f"DATA Received | user_name: {username}, email: {email}.")
     response = await dbController.insert_data(
         User,
         username=username,
@@ -27,6 +29,7 @@ async def register(user_info: UserRegister):
         password=hashed_password,
         is_admin=False
     )
+    print(f"RESPONSE from the server: {response}")
     if response["success"]:
         return {"message": response["message"]}
 
