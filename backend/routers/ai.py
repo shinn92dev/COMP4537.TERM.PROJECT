@@ -1,45 +1,131 @@
-import os
-from fastapi import APIRouter
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+import json
+import requests
+from datetime import datetime
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 
 
 router = APIRouter()
 
-# Load Google FLAN-T5 Model
-model_path = os.path.abspath("../ai_models")
-os.environ["HUGGINGFACE_HUB_CACHE"] = model_path
+
+OLLAMA_URL = "http://localhost:11434/api/generate"
 
 
-MODEL_NAME = "google/flan-t5-large"
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, cache_dir=model_path)
-model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME, cache_dir=model_path)
-print(f"✅ Model downloaded and saved in {model_path}")
+def ask_to_ai(prompt: str):
+    try:
+        payload = {
+            "model": "mistral",
+            "prompt": prompt,
+            "stream": False
+        }
+        response = requests.post(OLLAMA_URL, json=payload, timeout=6000)
+
+        if response.status_code == 200:
+            result = response.json().get("response", "")
+            print("RESULT BEFORE FORMATTING: ", result)
+
+            try:
+                final_result = json.loads(result)
+                print("RESULT AFTER FORMATTING: ", final_result)
+                return final_result
+            except json.JSONDecodeError as e:
+                print("❌ JSON Parsing Error:", e)
+                raise HTTPException(
+                    status_code=500,
+                    detail="AI response format is invalid"
+                )
+        else:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail="Failed to generate response from AI"
+            )
+
+    except requests.exceptions.ConnectionError:
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to connect to AI server"
+        )
+    except requests.exceptions.Timeout:
+        raise HTTPException(
+            status_code=500,
+            detail="AI server timed out"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Unexpected server error: {e}"
+        )
 
 
-def ask_to_ai(prompt=None):
-    # Define the input prompt
-    if not prompt:
-        prompt = "Hello. Let me know one fun fact that I might not know."
-    input_ids = tokenizer(prompt, return_tensors="pt").input_ids
+class ColorRequest(BaseModel):
+    weather: str | None = None
+    emotion: str
+    location: str | None = None
+    time: str
+    add_req: str | None = None
 
-    outputs = model.generate(
-        input_ids,
-        do_sample=True,
-        max_length=100,
-        temperature=0.7,
-        top_p=0.9,
-        num_return_sequences=1,
-        eos_token_id=tokenizer.eos_token_id
+
+@router.post("/recommend-color/")
+async def return_ai_answer(request: ColorRequest):
+    try:
+        weather = request.weather
+        emotion = request.emotion
+        location = request.location
+        time = request.time
+        add_req = request.add_req
+
+        if not emotion:
+            raise HTTPException(status_code=400, detail="Emotion is required.")
+
+        prompt_parts = [f"Emotion: {emotion}"]
+        if weather:
+            prompt_parts.append(f"Weather: {weather}")
+        if location:
+            prompt_parts.append(f"Location: {location}")
+        if time:
+            prompt_parts.append(f"Time: {time}")
+        if add_req:
+            prompt_parts.append(f"Additional Request: {add_req}")
+
+        prompt = ", ".join(prompt_parts)
+        prompt += (
+            ". Based on this, recommend a light color in HEX, "
+            "reason, and one piece of advice."
+        )
+        prompt += (
+            " Format the answer in JSON format like this: "
+            "{\"color\": \"answer\", \"reason\": \"reason\", "
+            "\"advice\": \"advice\"}"
+        )
+
+        answer = ask_to_ai(prompt)
+
+        return {
+            "status": "success",
+            "message": "Request processed successfully.",
+            "prompt": prompt,
+            "data": answer,
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        print("❌ Unexpected error:", e)
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+def main():
+    prompt = (
+        "emotion: happy, weather: rainy, location: vancouver, "
+        "time: 6:49. Based on this, recommend color for light "
+        "in HEX, reason, and the one advice. Format the answer "
+        "in JSON format like this: {'color': answer, 'reason': "
+        "reason, 'advice': advice}"
     )
-
-    decoded_output = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    return decoded_output
-
-
-@router.get("/")
-def return_ai_answer(prompt: str = None):
     answer = ask_to_ai(prompt)
-    return {
-        "prompt": prompt,
-        "result": answer
-    }
+    print(answer)
+
+
+if __name__ == "__main__":
+    main()
