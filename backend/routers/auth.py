@@ -4,8 +4,12 @@ from typing import Annotated
 from utils.auth import authenticate_user
 from utils.jwt_handler import create_access_token
 from datetime import timedelta
-from schemas import Token
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+
+ENV = os.getenv("ENV", "development")
 
 router = APIRouter()
 
@@ -33,7 +37,7 @@ async def login_for_access_token(
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=False,
+        secure=ENV=="production",
         samesite="lax",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
