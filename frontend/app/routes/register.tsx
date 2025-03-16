@@ -16,6 +16,7 @@ import {zodResolver} from "@hookform/resolvers/zod"
 import {useForm} from "react-hook-form"
 import {z} from "zod"
 import {register} from "~/lib/register";
+import {useState} from "react";
 
 
 const formSchema = z.object({
@@ -40,6 +41,8 @@ export const meta = ({}: Route.MetaArgs) => {
     ];
 };
 const Register = () => {
+    const [isSuccess, setSuccess] = useState(false);
+    const [result, setResult] = useState("");
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -52,20 +55,25 @@ const Register = () => {
     })
 
     const onSubmit = async (data: z.infer<typeof formSchema>) => {
-        const userInfo = {
-            "username": data.username,
-            "email": data.email,
-            "password": data.password
-        };
-        let response;
         try {
-            response = await register(userInfo);
-            console.log(response.message);
+            const response = await register({
+                "username": data.username,
+                "email": data.email,
+                "password": data.password
+            });
+            if (response.success) {
+                setSuccess(true);
+                form.reset();
+            } else {
+                setSuccess(false);
 
+            }
+            setResult(response.message);
         }
         catch (error){
-            response = {"message":false};
-            console.log(response.message);
+            console.error(error);
+            setSuccess(false);
+            setResult(error instanceof Error ? error.message : "An unexpected error occurred");
         }
     }
     return (
@@ -153,6 +161,11 @@ const Register = () => {
                         </div>
                     </form>
                 </Form>
+            {isSuccess && (
+                <div>
+                    <p>{result}</p>
+                </div>
+            )}
         </div>
     )
 };
