@@ -18,7 +18,7 @@ router = APIRouter()
 async def login_for_access_token(
     response: Response,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
-    ):
+        ):
     user = authenticate_user(form_data.username, form_data.password)
 
     if not user:
@@ -27,6 +27,7 @@ async def login_for_access_token(
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"}
         )
+
     ACCESS_TOKEN_EXPIRE_MINUTES = 60
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
@@ -37,12 +38,11 @@ async def login_for_access_token(
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=ENV=="production",
+        secure=ENV == "production",
         samesite="lax",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
 
-    
     return {"message": "Login successful. Cookie is set.", "status": 200}
 
 
