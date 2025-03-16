@@ -125,7 +125,6 @@ class DBController:
         finally:
             db.close()
 
-    
     def fetch_user_by_email(email: str):
         with SessionLocal() as db:
             try:
@@ -135,16 +134,15 @@ class DBController:
                     logger.warning(f"⚠No user found with email: {email}")
                     return None
                 return UserInDB(**user.__dict__)
-            
+
             except SQLAlchemyError as e:
                 logger.error(f"Database error: {e}")
                 return None
-            
+
             except Exception as e:
                 logger.error(f"❌Unexpected server error: {e}")
                 return None
-            
-            
+
     def fetch_user_by_user_id(user_id: int):
         with SessionLocal() as db:
             try:
