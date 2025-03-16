@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
-from routers import ai, test, api, login
+from routers import ai, test, api, login, user_dashboard
 import models  # noqa: F401
 
 load_dotenv()
@@ -30,6 +30,7 @@ def create_app():
         login.router,
         prefix=f"{BASE_URL}/login",
         tags=["login"])
+    app.include_router(user_dashboard.router, prefix=f"{BASE_URL}/user-dashboard", tags=["User Dashboard"])
 
     # Initialize Database
     try:
