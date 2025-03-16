@@ -10,7 +10,7 @@ class User(Base):
 
     user_id = Column(Integer, primary_key=True, index=True, unique=True)
     email = Column(String, unique=True, index=True)
-    username = Column(String, nullable=False)
+    name = Column(String, nullable=False)
     password = Column(String, nullable=False)
     is_admin = Column(Boolean, nullable=False)
 
