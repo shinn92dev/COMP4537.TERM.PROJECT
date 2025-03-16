@@ -29,7 +29,7 @@ def create_app():
     app.include_router(api.router, prefix="/api", tags=["api"])
     app.include_router(auth.router, prefix="/auth", tags=["auth"])
     app.include_router(auth.router, prefix="/users", tags=["users"])
-    app.include_router(register.router, prefix=f"{BASE_URL}", tags=["register"])
+    app.include_router(register.router, tags=["register"])
 
     # Initialize Database
     try:
