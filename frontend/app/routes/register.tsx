@@ -69,10 +69,10 @@ const Register = () => {
         }
     }
     return (
-        <div className="w-50% mx-auto">
-            <AspectRatio ratio={16 / 9} className="p-2 rounded bg-muted">
+        <div className="w-1/2 mx-auto border border-solid rounded-lg p-6">
+            <h2 className="text-2xl mb-4 font-bold">Register</h2>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 flex flex-col">
                         <FormField
                             control={form.control}
                             name="username"
@@ -147,11 +147,12 @@ const Register = () => {
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" className="rounded">Submit</Button>
+                        <Button type="submit" className="rounded ">Submit</Button>
+                        <div className="flex flex-col items-center">
+                            <a href="login" className="underline hover:text-blue-900">Have an account? Log in</a>
+                        </div>
                     </form>
                 </Form>
-
-            </AspectRatio>
         </div>
     )
 };
