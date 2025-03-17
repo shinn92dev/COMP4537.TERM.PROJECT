@@ -30,7 +30,9 @@ def create_app():
     app.include_router(ai.router, prefix=f"{BASE_URL}/ai", tags=["Ai"])
     app.include_router(api.router, prefix=f"{BASE_URL}/api", tags=["api"])
     app.include_router(auth.router, prefix=f"{BASE_URL}/auth", tags=["auth"])
-    app.include_router(users.router, prefix=f"{BASE_URL}/users", tags=["users"])
+    app.include_router(
+        users.router, prefix=f"{BASE_URL}/users", tags=["users"]
+        )
     app.include_router(
         register.router,
         prefix=f"{BASE_URL}",
