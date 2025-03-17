@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import jwt
 # from typing import Annotated
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
-from fastapi import HTTPException, status, Request
+from fastapi import HTTPException, status, Request, Depends
 from fastapi.security import OAuth2PasswordBearer
 from crud import DBController
 from schemas import TokenData
@@ -43,7 +43,7 @@ def create_access_token(
     return encoded_jwt
 
 
-async def get_current_user(request: Request):
+async def get_current_user(request: Request = Depends()):
     credential_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
