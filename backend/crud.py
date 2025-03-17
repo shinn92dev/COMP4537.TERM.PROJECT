@@ -20,7 +20,7 @@ class DBController:
         finally:
             db.close()
 
-    def insert_data(self, table, **data):
+    async def insert_data(self, table, **data):
         db: Session = SessionLocal()
         try:
             new_record = table(**data)
