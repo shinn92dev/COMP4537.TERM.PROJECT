@@ -18,7 +18,7 @@ def create_app():
     # CORS
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=["http://localhost:5173", "https://bcit-anthony-sh-s.com", "https://dolphin-app-kdrrc.ondigitalocean.app"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
