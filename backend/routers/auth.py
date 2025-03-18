@@ -38,8 +38,8 @@ async def login_for_access_token(
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=ENV == "production",
-        samesite="lax",
+        secure=True,
+        samesite="none",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
 
