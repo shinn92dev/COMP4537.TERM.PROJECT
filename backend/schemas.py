@@ -7,13 +7,13 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    user_id: str | None = None
+    user_id: int | str | None = None
     email: str | None = None
     is_admin: bool | None = None
 
 
 class User(BaseModel):
-    user_id: int
+    user_id: int | str
     email: str | None = None
     username: str | None = None
     is_admin: bool | None = None
