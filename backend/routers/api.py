@@ -15,13 +15,17 @@ class GenerateAPIKeyRequest(BaseModel):
 dbController = DBController()
 
 
+def create_api_key():
+    return str(uuid.uuid4())
+
+
 @router.post("/generate", response_model=GenerateAPIKeyRequest)
 def generate_api_key(body: GenerateAPIKeyRequest):
     user_id = body.id
     result = None
     for _ in range(5):
         try:
-            new_key = str(uuid.uuid4())
+            new_key = create_api_key()
             key_exist = dbController.is_key_already_exist(new_key)
             if not key_exist:
                 result = dbController.insert_data(
@@ -33,6 +37,7 @@ def generate_api_key(body: GenerateAPIKeyRequest):
                         "message": "Your API key generated successfully.",
                         "key": new_key
                     }
+                # TODO: (Shirley) When you successfully
                 elif result and not result.get("success", True):
                     raise Exception(result.get("message"))
         except Exception as e:
