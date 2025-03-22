@@ -57,10 +57,7 @@ async def get_current_user(request: Request):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = int(payload.get("sub"))
-        print(f"\nuser_id: {user_id}")
-        is_admin = payload.get("is_admin")
-        print(f"\nis_admin: {is_admin}")
-        print(is_admin)
+        
         if not user_id:
             raise credential_exception
         token_data = TokenData(user_id=user_id)
@@ -72,7 +69,6 @@ async def get_current_user(request: Request):
         )
 
     except InvalidTokenError:
-        print("\nfail to decode")
 
         raise credential_exception
 
