@@ -54,7 +54,7 @@ async def logout(response: Response):
         secure=True,
         samesite="None",
     )
-    return {"message": "Logged out successfully"}
+    return {"message": "Logged out successfully", "success": True}
 
 def main():
     pass
