@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, status, Response
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi.responses import RedirectResponse
 from typing import Annotated
 from utils.auth import authenticate_user
 from utils.jwt_handler import create_access_token
@@ -44,19 +43,18 @@ async def login_for_access_token(
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
 
-    return {"message": "Login successful. Cookie is set.", "status": 200}
+    return {"message": "Login successful. Cookie is set."}
 
 
 @router.delete("/token")
 async def logout(response: Response):
-    response = RedirectResponse(url="/", status_code=303)
     response.delete_cookie(
         key="access_token",
         httponly=True,
         secure=True,
         samesite="None",
     )
-    return response
+    return {"message": "Logged out successfully"}
 
 def main():
     pass
