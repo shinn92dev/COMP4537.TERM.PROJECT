@@ -21,8 +21,6 @@ async def login_for_access_token(
         ):
     user = authenticate_user(form_data.username, form_data.password)
 
-    print(f"is admin: {user.is_admin}")
-
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -33,10 +31,8 @@ async def login_for_access_token(
     ACCESS_TOKEN_EXPIRE_MINUTES = 60
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.user_id, "is_admin": user.is_admin}, expires_delta=access_token_expires
+        data={"sub": str(user.user_id), "is_admin": user.is_admin}, expires_delta=access_token_expires
     )
-
-    print(f"access token: {access_token}")
 
     response.set_cookie(
         key="access_token",
