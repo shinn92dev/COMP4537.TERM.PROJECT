@@ -2,7 +2,7 @@ import uuid
 from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel
 from crud import DBController
-from models import APIKey
+from models import APIKey,HTTPMethodEnum, APIUsage
 
 
 router = APIRouter()
@@ -10,6 +10,12 @@ router = APIRouter()
 
 class GenerateAPIKeyRequest(BaseModel):
     id: int
+
+class GenerateAPIKeyResponse(GenerateAPIKeyRequest):
+    success: bool
+    message: str
+    key: str
+
 
 
 dbController = DBController()
@@ -19,38 +25,51 @@ def create_api_key():
     return str(uuid.uuid4())
 
 
-@router.post("/generate", response_model=GenerateAPIKeyRequest)
-def generate_api_key(body: GenerateAPIKeyRequest):
+@router.post("/generate", response_model=GenerateAPIKeyResponse)
+async def generate_api_key(body: GenerateAPIKeyRequest):
     user_id = body.id
     result = None
     for _ in range(5):
         try:
             new_key = create_api_key()
             key_exist = dbController.is_key_already_exist(new_key)
-            if not key_exist:
-                result = dbController.insert_data(
-                    APIKey, id=user_id, key=new_key
+
+            if key_exist:
+                continue
+
+            result = await dbController.insert_data(
+                    APIKey, user_id=user_id, key=new_key
                     )
-                if result and result.get("success", None):
+            if result and result.get("success"):
+                api_key_id = dbController.get_api_key_by_user_id(user_id)
+                if api_key_id:
+                    for method in HTTPMethodEnum:
+                        await dbController.insert_data(APIUsage,key_id=api_key_id, count=0, method=method.value)
+
                     return {
                         "success": True,
                         "message": "Your API key generated successfully.",
-                        "key": new_key
+                        "key": new_key,
+                        "id": user_id
                     }
-                # TODO: (Shirley) When you successfully
-                elif result and not result.get("success", True):
-                    raise Exception(result.get("message"))
+                else:
+                    return {
+                        "success": False,
+                        "message": "Your API key could not be generated.",
+                        "key": new_key,
+                        "id": user_id
+                    }
+
+            elif result and not result.get("success"):
+                raise Exception(result.get("message"))
         except Exception as e:
-            return {
-                "success": False,
-                "error": "Exception",
-                "message": str(e)
-            }
+            print(f"Error in attempt: {str(e)}")
     return {
         "success": False,
         "error": "Exception",
         "message":
-        "Failed to generate a unique API Key after multiple attempts."
+        "Failed to generate a unique API Key after multiple attempts.",
+        "id": user_id
     }
 
 

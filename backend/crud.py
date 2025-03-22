@@ -158,3 +158,11 @@ class DBController:
             except Exception as e:
                 logger.error(f"❌Unexpected server error: {e}")
                 return None
+
+    def get_api_key_id_by_user_id(self, user_id: int):
+        db = SessionLocal()
+        try:
+            key = db.query(APIKey).filter(APIKey.user_id == user_id).first()
+            return key.key_id if key else None
+        finally:
+            db.close()
