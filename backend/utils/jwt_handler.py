@@ -51,13 +51,16 @@ async def get_current_user(request: Request):
     )
 
     token = request.cookies.get("access_token")
+    print(f"\ntoken: {token}")
     if not token:
         raise credential_exception
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = payload.get("sub")
+        print(f"\nuser_id: {user_id}")
         is_admin = payload.get("is_admin")
+        print(f"\nis_admin: {is_admin}")
         print(is_admin)
         if not user_id:
             raise credential_exception
@@ -70,6 +73,8 @@ async def get_current_user(request: Request):
         )
 
     except InvalidTokenError:
+        print("\nfail to decode")
+
         raise credential_exception
 
     user = DBController.fetch_user_by_user_id(token_data.user_id)
