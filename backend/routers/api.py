@@ -79,12 +79,12 @@ class DeleteAPIKeyRequest(BaseModel):
 
 @router.get("/get-key")
 def get_api_key(user_id: int):
-    api_key = dbController.get_api_key_by_user_id(user_id)
-    if not api_key:
+    api_keys = dbController.get_all_api_keys_for_a_user(user_id)
+    if not api_keys:
         raise HTTPException(
             status_code=404, detail="API key not found for this user."
             )
-    return {"success": True, "key": api_key}
+    return {"success": True, "key": api_keys}
 
 
 @router.delete("/delete-key")

@@ -166,3 +166,11 @@ class DBController:
             return key.key_id if key else None
         finally:
             db.close()
+
+    def get_all_api_keys_for_a_user(self, user_id: int):
+        db = SessionLocal()
+        try:
+            keys = db.query(APIKey).filter(APIKey.user_id == user_id).all()
+            return [key.key for key in keys] if keys else None
+        finally:
+            db.close()
