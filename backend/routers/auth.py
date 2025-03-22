@@ -43,7 +43,7 @@ async def login_for_access_token(
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
 
-    return {"message": "Login successful. Cookie is set.", "is_admin": user.is_admin}
+    return {"message": "Login successful. Cookie is set.", "is_admin": user.is_admin, "success": True}
 
 
 @router.delete("/token")
