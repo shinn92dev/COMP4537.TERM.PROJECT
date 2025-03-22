@@ -100,7 +100,7 @@ class DBController:
         finally:
             db.close()
 
-    def is_valid_api_key(api_key: str):
+    def is_valid_api_key(self, api_key: str):
         db = SessionLocal()
         try:
             return (
@@ -110,7 +110,7 @@ class DBController:
         finally:
             db.close()
 
-    def delete_api_key(user_id: int, api_key: str):
+    def delete_api_key(self, user_id: int, api_key: str):
         db = SessionLocal()
         try:
             matching = db.query(APIKey).filter(
