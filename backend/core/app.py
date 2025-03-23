@@ -45,11 +45,6 @@ def create_app():
         tags=["register"]
         )
     app.include_router(user_usage.router, prefix=f"{BASE_URL}/users", tags=["users"])
-    # app.include_router(
-    #     user_dashboard.router,
-    #     prefix=f"{BASE_URL}/user-dashboard",
-    #     tags=["User Dashboard"]
-    #     )
 
     # Initialize Database
     try:
