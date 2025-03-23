@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import Annotated
 from utils.jwt_handler import get_current_user
 from schemas import User
-from functools import wraps
 
 router = APIRouter()
 

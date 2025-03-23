@@ -14,7 +14,6 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-# ロギング設定
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -60,7 +59,6 @@ async def get_current_user(request: Request):
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-    # クッキーの内容をログに出力
     logger.info(f"Cookies in request: {request.cookies}")
     
     token = request.cookies.get("access_token")
@@ -106,6 +104,23 @@ async def get_current_user(request: Request):
     logger.info(f"User retrieved successfully: user_id={user.user_id}, is_admin={user.is_admin}")
     return user
 
+
+async def check_is_admin(request: Request):
+    token = request.cookies.get("access_token")
+    if not token:
+        return None
+    
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        is_admin = payload.get("is_admin")
+        if not is_admin:
+            return None
+        
+        return is_admin
+    
+    except (ExpiredSignatureError, InvalidTokenError):
+        return None
+    
 
 def main():
     pass
