@@ -3,16 +3,17 @@ from typing import Annotated
 from utils.jwt_handler import get_current_user
 from schemas import User
 from sqlalchemy.orm import Session
-from crud import get_db
+from crud import DBController
 from sqlalchemy import func
 from models import APIKey, APIUsage
 
 router = APIRouter()
+db_controller = DBController()
 
 @router.get("/usage")
 async def get_user_usage(
     current_user: Annotated[User, Depends(get_current_user)],
-    db: Session = Depends(get_db)):
+    db: Session = Depends(db_controller.get_db)):
 
     user_keys = db.query(APIKey).filter_by(user_id=current_user.user_id).all()
 
