@@ -24,8 +24,7 @@ async def get_admin_user(user: User = Depends(get_current_user)):
 
 
 @router.get("/admin", response_model=User)
-
-async def admin_page(user=Annotated[User, Depends(get_admin_user)]):
+async def admin_page(user: Annotated[User, Depends(get_admin_user)]):
     return user
 
 
