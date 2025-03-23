@@ -49,7 +49,7 @@ def create_app():
         prefix=f"{BASE_URL}/user-dashboard",
         tags=["User Dashboard"]
         )
-    app.include_route(
+    app.include_router(
         redirect.router,
         prefix=f"{BASE_URL}/redirect",
         tags=["redirect"]
