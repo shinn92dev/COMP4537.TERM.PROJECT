@@ -3,7 +3,7 @@ from typing import Annotated
 from utils.jwt_handler import get_current_user
 from schemas import User
 from sqlalchemy.orm import Session
-from dependencies import get_db
+from crud import get_db
 from sqlalchemy import func
 from models import APIKey, APIUsage
 
