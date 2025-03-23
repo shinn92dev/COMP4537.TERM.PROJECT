@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
-from routers import ai, test, api, auth, register, users, user_dashboard, user_usage
+from routers import ai, test, api, auth, register, users, user_usage
 import models  # noqa: F401
 
 load_dotenv()
