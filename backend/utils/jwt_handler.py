@@ -112,9 +112,10 @@ async def check_is_admin(request: Request):
     
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        is_admin = payload.get("is_admin")
-        if not is_admin:
+        if "is_admin" not in payload:
+            logger.info("is_admin key not found in token payload → returning None")
             return None
+        is_admin = payload["is_admin"]
         
         return is_admin
     
