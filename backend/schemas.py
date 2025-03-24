@@ -23,11 +23,11 @@ class UserInDB(User):
     password: str
 
 
-class UserDashboardResponse(BaseModel):
-    username: str
-    email: str
-    request_limit: int
-    remaining_requests: int
+# class UserDashboardResponse(BaseModel):
+#     username: str
+#     email: str
+#     request_limit: int
+#     remaining_requests: int
 
 
 def main():
