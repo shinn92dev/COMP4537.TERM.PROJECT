@@ -100,7 +100,7 @@ class DBController:
         finally:
             db.close()
 
-    def is_valid_api_key(api_key: str):
+    def is_valid_api_key(self, api_key: str):
         db = SessionLocal()
         try:
             return (
@@ -110,7 +110,7 @@ class DBController:
         finally:
             db.close()
 
-    def delete_api_key(user_id: int, api_key: str):
+    def delete_api_key(self, user_id: int, api_key: str):
         db = SessionLocal()
         try:
             matching = db.query(APIKey).filter(
@@ -158,3 +158,19 @@ class DBController:
             except Exception as e:
                 logger.error(f"❌Unexpected server error: {e}")
                 return None
+
+    def get_api_key_id_by_user_id(self, user_id: int):
+        db = SessionLocal()
+        try:
+            key = db.query(APIKey).filter(APIKey.user_id == user_id).first()
+            return key.key_id if key else None
+        finally:
+            db.close()
+
+    def get_all_api_keys_for_a_user(self, user_id: int):
+        db = SessionLocal()
+        try:
+            keys = db.query(APIKey).filter(APIKey.user_id == user_id).all()
+            return [key.key for key in keys] if keys else None
+        finally:
+            db.close()

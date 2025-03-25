@@ -28,10 +28,10 @@ async def login_for_access_token(
             headers={"WWW-Authenticate": "Bearer"}
         )
 
-    ACCESS_TOKEN_EXPIRE_MINUTES = 60
+    ACCESS_TOKEN_EXPIRE_MINUTES = 180
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": str(user.user_id)}, expires_delta=access_token_expires
+        data={"sub": str(user.user_id), "is_admin": user.is_admin}, expires_delta=access_token_expires
     )
 
     response.set_cookie(
@@ -43,7 +43,18 @@ async def login_for_access_token(
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
 
-    return {"message": "Login successful. Cookie is set.", "status": 200}
+    return {"message": "Login successful. Cookie is set.", "is_admin": user.is_admin, "success": True}
+
+
+@router.delete("/token")
+async def logout(response: Response):
+    response.delete_cookie(
+        key="access_token",
+        httponly=True,
+        secure=True,
+        samesite="None",
+    )
+    return {"message": "Logged out successfully", "success": True}
 
 
 def main():
