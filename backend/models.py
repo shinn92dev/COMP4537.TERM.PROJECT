@@ -45,6 +45,7 @@ class APIUsage(Base):
         nullable=False, index=True)
     count = Column(Integer, default=0, nullable=False)
     method = Column(Enum(HTTPMethodEnum), nullable=False)
+    endpoint = Column(String, nullable=True)
 
 
 class Token(Base):
