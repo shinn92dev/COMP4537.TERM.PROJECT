@@ -171,6 +171,30 @@ class DBController:
         db = SessionLocal()
         try:
             keys = db.query(APIKey).filter(APIKey.user_id == user_id).all()
-            return [key.key for key in keys] if keys else None
+            return keys if keys else None
+        finally:
+            db.close()
+    def update_api_key_activation(self, api_key, update_status_to):
+        db = SessionLocal()
+        try:
+            locate_the_key = db.query(APIKey).filter(APIKey.key == api_key).first()
+            if locate_the_key:
+                locate_the_key.active = update_status_to
+                db.commit()
+                return {
+                "success": True,
+                "message": "API key status updated successfully."
+            }
+            else:
+                return {
+                    "success": False,
+                    "message": "API Key not found for the provided key."
+                }
+        except SQLAlchemyError as e:
+            db.rollback()
+            return {
+                "success": False,
+                "message": f"An error occurred: {str(e)}"
+            }
         finally:
             db.close()
