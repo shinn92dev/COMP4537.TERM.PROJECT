@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel
 from crud import DBController
 from models import APIKey,HTTPMethodEnum, APIUsage
+import traceback
 
 
 router = APIRouter()
@@ -10,6 +11,7 @@ router = APIRouter()
 
 class GenerateAPIKeyRequest(BaseModel):
     id: int
+    key_name: str
 
 class GenerateAPIKeyResponse(GenerateAPIKeyRequest):
     success: bool
@@ -28,6 +30,8 @@ def create_api_key():
 @router.post("/generate", response_model=GenerateAPIKeyResponse)
 async def generate_api_key(body: GenerateAPIKeyRequest):
     user_id = body.id
+    key_name = body.key_name
+    active = True
     result = None
     for _ in range(5):
         try:
@@ -38,7 +42,7 @@ async def generate_api_key(body: GenerateAPIKeyRequest):
                 continue
 
             result = await dbController.insert_data(
-                    APIKey, user_id=user_id, key=new_key
+                APIKey, user_id=user_id, key=new_key, key_name=key_name, active=active
                     )
             if result and result.get("success"):
                 api_key_id = dbController.get_api_key_by_user_id(user_id)
@@ -50,14 +54,16 @@ async def generate_api_key(body: GenerateAPIKeyRequest):
                         "success": True,
                         "message": "Your API key generated successfully.",
                         "key": new_key,
-                        "id": user_id
+                        "id": user_id,
+                        "key_name": key_name,
                     }
                 else:
                     return {
                         "success": False,
                         "message": "Your API key could not be generated.",
                         "key": new_key,
-                        "id": user_id
+                        "id": user_id,
+                        "key_name": key_name,
                     }
 
             elif result and not result.get("success"):
@@ -69,7 +75,8 @@ async def generate_api_key(body: GenerateAPIKeyRequest):
         "error": "Exception",
         "message":
         "Failed to generate a unique API Key after multiple attempts.",
-        "id": user_id
+        "id": user_id,
+        "key_name": key_name,
     }
 
 
@@ -84,7 +91,7 @@ def get_api_key(user_id: int):
         raise HTTPException(
             status_code=404, detail="API key not found for this user."
             )
-    return {"success": True, "key": api_keys}
+    return {"success": True, "keys": api_keys}
 
 
 @router.delete("/delete-key")
