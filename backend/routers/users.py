@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Annotated
-from utils.jwt_handler import get_current_user, check_is_admin
+from utils.jwt_handler import get_current_user, check_is_admin, get_current_user_id
 from schemas import User
 
 router = APIRouter()
@@ -33,6 +33,12 @@ async def redirect_check(
 ):
     return is_admin
 
+
+@router.get("user-id", response_model=int | None)
+async def get_user_id(
+    user_id: Annotated[int | None, Depends(get_current_user_id)]
+):
+    return user_id
 
 def main():
     pass
