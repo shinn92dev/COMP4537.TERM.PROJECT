@@ -114,6 +114,60 @@ def delete_api_key(body: DeleteAPIKeyRequest, api_key: str = Header(None)):
     return {"success": True, "message": "API Key deleted successfully."}
 
 
+class UpdateAPIKeyActivation(BaseModel):
+    user_id: int
+    key: str
+    current_status: str
+
+
+@router.patch("/update-key-activation")
+async def update_key_activation(body: UpdateAPIKeyActivation):
+    print(f"id: {body.user_id}")
+    print(f"key: {body.key}")
+    print(f"current_status: {body.current_status}")
+    if not body.user_id:
+        raise HTTPException(
+            status_code=400, detail="User ID is required in the header."
+        )
+    if not body.key:
+        raise HTTPException(
+            status_code=400, detail="Key is required in the header."
+        )
+    if not dbController.is_valid_api_key(body.key):
+        raise HTTPException(
+            status_code=403, detail="Invalid API Key for this user."
+        )
+    api_key = body.key
+    status_mapping = {
+        "active": False,
+        "inactive": True
+    }
+    update_status_to = status_mapping.get(body.current_status)
+    if update_status_to is None:
+        raise HTTPException(
+            status_code=400, detail="Invalid status code."
+        )
+    try:
+        update_result = dbController.update_api_key_activation(api_key, update_status_to)
+        if update_result.get("success"):
+            return {
+                "success": True,
+                "message": f"Your API key's activation was successful set to {update_status_to}.",
+            }
+        else:
+            return {
+                "success": False,
+                "message": f"Your API key's activation was not successful set to {update_status_to}.",
+            }
+    except Exception as e:
+        print(f"Error in update_key_activation: {str(e)}")
+        print(traceback.format_exc())  # 打印完整错误堆栈
+        raise HTTPException(
+            status_code=500,
+            detail="An error occurred while processing the request.")
+
+
+
 def main():
     pass
 
