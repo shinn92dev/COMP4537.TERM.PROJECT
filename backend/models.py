@@ -23,6 +23,8 @@ class APIKey(Base):
         Integer, ForeignKey("users.user_id"),
         index=True, nullable=False
         )
+    key_name = Column(String, nullable=False)
+    active = Column(Boolean, nullable=False)
     key = Column(String, unique=True, nullable=False)
 
 
