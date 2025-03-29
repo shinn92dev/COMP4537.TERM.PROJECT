@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 import jwt
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 from fastapi import HTTPException, status, Request
-from fastapi.security import OAuth2PasswordBearer
 from crud import DBController
 from schemas import TokenData
 import logging
@@ -19,8 +18,6 @@ logger = logging.getLogger(__name__)
 
 logger.info(f"SECRET_KEY loaded: {'Yes' if SECRET_KEY else 'No'}")
 logger.info(f"ALGORITHM: {ALGORITHM}")
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 if not SECRET_KEY:
     raise ValueError(
