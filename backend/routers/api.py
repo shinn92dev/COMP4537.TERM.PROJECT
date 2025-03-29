@@ -14,7 +14,6 @@ class GenerateAPIKeyRequest(BaseModel):
     key_name: str
 
 
-
 class GenerateAPIKeyResponse(GenerateAPIKeyRequest):
     success: bool
     message: str
@@ -171,7 +170,6 @@ async def update_key_activation(body: UpdateAPIKeyActivation):
         raise HTTPException(
             status_code=500,
             detail="An error occurred while processing the request.")
-
 
 
 def main():
