@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Annotated
-from utils.jwt_handler import get_current_user_id
+from utils.jwt_handler import get_current_user
+from schemas import User
 from sqlalchemy.orm import Session
 from crud import DBController
 from sqlalchemy import func
@@ -11,10 +12,10 @@ db_controller = DBController()
 
 @router.get("/usage")
 async def get_user_usage(
-    user_id: Annotated[int, Depends(get_current_user_id)],
+    current_user: Annotated[User, Depends(get_current_user)],
     db: Session = Depends(db_controller.get_db)):
 
-    user_keys = db.query(APIKey).filter_by(user_id=user_id).all()
+    user_keys = db.query(APIKey).filter_by(user_id=current_user.user_id).all()
 
     if not user_keys:
         return {
