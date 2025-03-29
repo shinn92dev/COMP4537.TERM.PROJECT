@@ -11,7 +11,7 @@ db_controller = DBController()
 
 @router.get("/usage")
 async def get_user_usage(
-    user_id: Annotated[bool, Depends(get_current_user_id)],
+    user_id: Annotated[int, Depends(get_current_user_id)],
     db: Session = Depends(db_controller.get_db)):
 
     user_keys = db.query(APIKey).filter_by(user_id=user_id).all()
