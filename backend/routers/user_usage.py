@@ -16,6 +16,8 @@ async def get_user_usage(
 
     user_keys = db.query(APIKey).filter_by(user_id=user_id).all()
 
+    print(f"user id = {user_id}")
+
     if not user_keys:
         return {
             "request_limit": 20,
