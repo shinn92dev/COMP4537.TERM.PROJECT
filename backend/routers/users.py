@@ -34,7 +34,7 @@ async def redirect_check(
     return is_admin
 
 
-@router.get("id", response_model=int | None)
+@router.get("/id", response_model=int | None)
 async def get_user_id(
     user_id: Annotated[int | None, Depends(get_current_user_id)]
 ):
