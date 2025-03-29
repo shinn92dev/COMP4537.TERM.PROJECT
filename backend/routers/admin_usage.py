@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 # from typing import List
-from utils.jwt_handler import get_current_user
-from schemas import User
+from utils.jwt_handler import check_is_admin
 from sqlalchemy.orm import Session
 from crud import DBController
 from sqlalchemy import func
@@ -13,10 +12,10 @@ db_controller = DBController()
 
 @router.get("/user-breakdown")
 async def get_user_breakdown(
-    current_user: User = Depends(get_current_user),
+    is_admin: bool = Depends(check_is_admin),
     db: Session = Depends(db_controller.get_db),
 ):
-    if not current_user.is_admin:
+    if not is_admin:
         raise HTTPException(status_code=403, detail="Not authorized as admin.")
 
     results = (

@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel
 from crud import DBController
 from models import APIKey, HTTPMethodEnum, APIUsage
+import traceback
 
 
 router = APIRouter()
@@ -10,6 +11,8 @@ router = APIRouter()
 
 class GenerateAPIKeyRequest(BaseModel):
     id: int
+    key_name: str
+
 
 
 class GenerateAPIKeyResponse(GenerateAPIKeyRequest):
@@ -28,6 +31,8 @@ def create_api_key():
 @router.post("/generate", response_model=GenerateAPIKeyResponse)
 async def generate_api_key(body: GenerateAPIKeyRequest):
     user_id = body.id
+    key_name = body.key_name
+    active = True
     result = None
     for _ in range(5):
         try:
@@ -38,7 +43,7 @@ async def generate_api_key(body: GenerateAPIKeyRequest):
                 continue
 
             result = await dbController.insert_data(
-                    APIKey, user_id=user_id, key=new_key
+                APIKey, user_id=user_id, key=new_key, key_name=key_name, active=active
                     )
             if result and result.get("success"):
                 api_key_id = dbController.get_api_key_by_user_id(user_id)
@@ -55,14 +60,16 @@ async def generate_api_key(body: GenerateAPIKeyRequest):
                         "success": True,
                         "message": "Your API key generated successfully.",
                         "key": new_key,
-                        "id": user_id
+                        "id": user_id,
+                        "key_name": key_name,
                     }
                 else:
                     return {
                         "success": False,
                         "message": "Your API key could not be generated.",
                         "key": new_key,
-                        "id": user_id
+                        "id": user_id,
+                        "key_name": key_name,
                     }
 
             elif result and not result.get("success"):
@@ -74,7 +81,8 @@ async def generate_api_key(body: GenerateAPIKeyRequest):
         "error": "Exception",
         "message":
         "Failed to generate a unique API Key after multiple attempts.",
-        "id": user_id
+        "id": user_id,
+        "key_name": key_name,
     }
 
 
@@ -89,7 +97,7 @@ def get_api_key(user_id: int):
         raise HTTPException(
             status_code=404, detail="API key not found for this user."
             )
-    return {"success": True, "key": api_keys}
+    return {"success": True, "keys": api_keys}
 
 
 @router.delete("/delete-key")
@@ -110,6 +118,60 @@ def delete_api_key(body: DeleteAPIKeyRequest, api_key: str = Header(None)):
             detail="Matching API Key not found for this user to delete."
             )
     return {"success": True, "message": "API Key deleted successfully."}
+
+
+class UpdateAPIKeyActivation(BaseModel):
+    user_id: int
+    key: str
+    current_status: str
+
+
+@router.patch("/update-key-activation")
+async def update_key_activation(body: UpdateAPIKeyActivation):
+    print(f"id: {body.user_id}")
+    print(f"key: {body.key}")
+    print(f"current_status: {body.current_status}")
+    if not body.user_id:
+        raise HTTPException(
+            status_code=400, detail="User ID is required in the header."
+        )
+    if not body.key:
+        raise HTTPException(
+            status_code=400, detail="Key is required in the header."
+        )
+    if not dbController.is_valid_api_key(body.key):
+        raise HTTPException(
+            status_code=403, detail="Invalid API Key for this user."
+        )
+    api_key = body.key
+    status_mapping = {
+        "active": False,
+        "inactive": True
+    }
+    update_status_to = status_mapping.get(body.current_status)
+    if update_status_to is None:
+        raise HTTPException(
+            status_code=400, detail="Invalid status code."
+        )
+    try:
+        update_result = dbController.update_api_key_activation(api_key, update_status_to)
+        if update_result.get("success"):
+            return {
+                "success": True,
+                "message": f"Your API key's activation was successful set to {update_status_to}.",
+            }
+        else:
+            return {
+                "success": False,
+                "message": f"Your API key's activation was not successful set to {update_status_to}.",
+            }
+    except Exception as e:
+        print(f"Error in update_key_activation: {str(e)}")
+        print(traceback.format_exc())  # 打印完整错误堆栈
+        raise HTTPException(
+            status_code=500,
+            detail="An error occurred while processing the request.")
+
 
 
 def main():

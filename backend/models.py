@@ -23,6 +23,8 @@ class APIKey(Base):
         Integer, ForeignKey("users.user_id"),
         index=True, nullable=False
         )
+    key_name = Column(String, nullable=False)
+    active = Column(Boolean, nullable=False)
     key = Column(String, unique=True, nullable=False)
 
 
@@ -45,6 +47,7 @@ class APIUsage(Base):
         nullable=False, index=True)
     count = Column(Integer, default=0, nullable=False)
     method = Column(Enum(HTTPMethodEnum), nullable=False)
+    endpoint = Column(String, nullable=True)
 
 
 class Token(Base):

@@ -47,3 +47,4 @@ coverage/
 
 # AI Models
 ai_models/
+node_modules
