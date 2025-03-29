@@ -2,7 +2,7 @@ import uuid
 from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel
 from crud import DBController
-from models import APIKey,HTTPMethodEnum, APIUsage
+from models import APIKey, HTTPMethodEnum, APIUsage
 
 
 router = APIRouter()
@@ -11,11 +11,11 @@ router = APIRouter()
 class GenerateAPIKeyRequest(BaseModel):
     id: int
 
+
 class GenerateAPIKeyResponse(GenerateAPIKeyRequest):
     success: bool
     message: str
     key: str
-
 
 
 dbController = DBController()
@@ -44,7 +44,12 @@ async def generate_api_key(body: GenerateAPIKeyRequest):
                 api_key_id = dbController.get_api_key_by_user_id(user_id)
                 if api_key_id:
                     for method in HTTPMethodEnum:
-                        await dbController.insert_data(APIUsage,key_id=api_key_id, count=0, method=method.value)
+                        await dbController.insert_data(
+                            APIUsage,
+                            key_id=api_key_id,
+                            count=0,
+                            method=method.value
+                            )
 
                     return {
                         "success": True,

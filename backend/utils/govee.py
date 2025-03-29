@@ -77,7 +77,8 @@ class Govee():
 
 def main():
     g = Govee(key)
-    g.turn_on_and_off(1, False)
+    print(g.get_govee_devices())
+
     # for i in (range(5)):
     #     condition = True if i % 2 == 0 else False
     #     g.turn_on_and_off(1, condition)
