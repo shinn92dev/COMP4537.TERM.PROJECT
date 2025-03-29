@@ -73,12 +73,12 @@ async def get_current_user(request: Request):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         logger.info(f"Token decoded successfully: {payload}")
         
-        user_id = int(payload.get("sub"))
-        logger.info(f"User ID from token: {user_id}")
-        
-        if not user_id:
+        sub = payload.get("sub")
+        if sub is None:
             logger.warning("No user_id found in token payload")
             raise credential_exception
+        
+        user_id = int(sub)
             
         token_data = TokenData(user_id=user_id)
         logger.info(f"TokenData created: {token_data}")
@@ -146,12 +146,13 @@ async def get_current_user_id(request: Request):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         logger.info(f"Token decoded successfully: {payload}")
         
-        user_id = int(payload.get("sub"))
-        logger.info(f"User ID from token: {user_id}")
-        
-        if not user_id:
+        sub = payload.get("sub")
+        if sub is None:
             logger.warning("No user_id found in token payload")
             raise credential_exception
+        
+        user_id = int(sub)
+        logger.info(f"User ID from token: {user_id}")
         
         return user_id
     
