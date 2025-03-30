@@ -45,7 +45,7 @@ async def generate_api_key(body: GenerateAPIKeyRequest):
                 APIKey, user_id=user_id, key=new_key, key_name=key_name, active=active
                     )
             if result and result.get("success"):
-                api_key_id = dbController.get_api_key_by_user_id(user_id)
+                api_key_id = dbController.get_api_key_id_by_user_id(user_id)
                 if api_key_id:
                     for method in HTTPMethodEnum:
                         await dbController.insert_data(
@@ -81,7 +81,7 @@ async def generate_api_key(body: GenerateAPIKeyRequest):
         "error": "Exception",
         "message":
         "Failed to generate a unique API Key after multiple attempts.",
-        "key":"",
+        "key": "",
         "id": user_id,
         "key_name": key_name,
     }
@@ -172,6 +172,7 @@ async def update_key_activation(body: UpdateAPIKeyActivation):
         raise HTTPException(
             status_code=500,
             detail="An error occurred while processing the request.")
+
 
 
 def main():
