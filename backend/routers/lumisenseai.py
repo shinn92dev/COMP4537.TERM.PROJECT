@@ -1,18 +1,11 @@
-from fastapi import APIRouter, HTTPException, Depends, status, Response
-from fastapi.security import OAuth2PasswordRequestForm
-from typing import Annotated
-from utils.auth import authenticate_user
-from utils.jwt_handler import create_access_token
-from datetime import timedelta
+from fastapi import APIRouter, HTTPException, Depends, status
+from backend.utils.ai_rag import ask_to_ai_rag
 from dotenv import load_dotenv
 import os
 from pydantic import BaseModel
 from utils.govee import Govee
-import requests
-import json
 
 load_dotenv()
-OLLAMA_URL = "http://localhost:11434/api/generate"
 
 ENV = os.getenv("ENV", "development")
 
@@ -90,51 +83,6 @@ class GoveeAIControlRequest(BaseModel):
     addReq: str | None = None
 
 
-def ask_to_ai(prompt: str):
-    try:
-        payload = {
-            "model": "mistral",
-            "prompt": prompt,
-            "stream": False
-        }
-        response = requests.post(OLLAMA_URL, json=payload, timeout=6000)
-
-        if response.status_code == 200:
-            result = response.json().get("response", "")
-            print("RESULT BEFORE FORMATTING: ", result)
-
-            try:
-                final_result = json.loads(result)
-                print("RESULT AFTER FORMATTING: ", final_result)
-                return final_result
-            except json.JSONDecodeError as e:
-                print("❌ JSON Parsing Error:", e)
-                raise HTTPException(
-                    status_code=500,
-                    detail="AI response format is invalid"
-                )
-        else:
-            raise HTTPException(
-                status_code=response.status_code,
-                detail="Failed to generate response from AI"
-            )
-
-    except requests.exceptions.ConnectionError:
-        raise HTTPException(
-            status_code=500,
-            detail="Failed to connect to AI server"
-        )
-    except requests.exceptions.Timeout:
-        raise HTTPException(
-            status_code=500,
-            detail="AI server timed out"
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Unexpected server error: {e}"
-        )
-
 
 def hex_to_rgb(hex_code: str) -> dict:
     hex_code = hex_code.lstrip('#')
@@ -161,25 +109,15 @@ async def set_color_by_ai(payload: GoveeAIControlRequest):
         if not emotion:
             raise HTTPException(status_code=400, detail="Emotion is required.")
 
-        prompt_parts = [f"Emotion: {emotion}"]
+        prompt_parts = [f"Emotion: {emotion}, Time: {time}"]
 
-        if time:
-            prompt_parts.append(f"Time: {time}")
         if add_req:
-            prompt_parts.append(f"Additional Request: {add_req}")
+            prompt_parts.append(f"Request: {add_req}")
 
         prompt = ", ".join(prompt_parts)
-        prompt += (
-            ". Based on this, recommend a light color in HEX, "
-            "reason, and one piece of advice."
-        )
-        prompt += (
-            " Format the answer in JSON format like this: "
-            "{\"color\": \"answer\", \"reason\": \"reason\", "
-            "\"advice\": \"advice\"}"
-        )
 
-        answer = ask_to_ai(prompt)
+
+        answer = ask_to_ai_rag(prompt)
         govee_controller = Govee(govee_key)
         govee_controller.set_lamp_color(device, hex_to_rgb(answer["color"]))
         return {
@@ -194,3 +132,8 @@ async def set_color_by_ai(payload: GoveeAIControlRequest):
     except Exception as e:
         print("❌ Unexpected error:", e)
         raise HTTPException(status_code=500, detail="Internal server error")
+
+
+
+if __name__ == "__main__":
+    ask_to_ai_rag("Emotion: Happy, Time: 12:30, Additional Request: I want to be happy.")
