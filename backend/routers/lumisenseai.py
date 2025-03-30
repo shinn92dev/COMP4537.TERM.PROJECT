@@ -22,7 +22,7 @@ class APIKeyRequest(BaseModel):
 async def get_devices(payload: APIKeyRequest):
     govee_key = payload.goveeKey
     goveeController = Govee(govee_key)
-    devices = goveeController.get_govee_devices
+    devices = goveeController.get_govee_devices()
     if devices:
         return {"success": True,  "message": "Devices fected successfully.", "data": {"devices": devices}}
     else:
