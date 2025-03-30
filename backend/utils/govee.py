@@ -102,30 +102,30 @@ class Govee():
 
 
     def set_lamp_brightness(self, device: dict, brightness: int):
-    url = self.base_url + "control"
-    payload = {
-       "requestId": str(uuid.uuid4()),
-        "sku": device["model"],
-        "device": device["device"],
-        "model": device["model"],
-        "cmd": {
-            "name": "brightness",
-            "value": brightness
+        url = self.base_url + "control"
+        payload = {
+        "requestId": str(uuid.uuid4()),
+            "sku": device["model"],
+            "device": device["device"],
+            "model": device["model"],
+            "cmd": {
+                "name": "brightness",
+                "value": brightness
+            }
         }
-    }
 
-    response = requests.put(url, headers=self.headers, json=payload)
-    time.sleep(1)
+        response = requests.put(url, headers=self.headers, json=payload)
+        time.sleep(1)
 
-    if response.status_code == 200:
-        print(f"💡 Brightness set to {brightness} successfully.")
-        print(response.json())
-    else:
-        print("❌ Error setting brightness: ", end="")
-        try:
-            print(response.json()["message"])
-        except Exception as e:
-            print(e)
+        if response.status_code == 200:
+            print(f"💡 Brightness set to {brightness} successfully.")
+            print(response.json())
+        else:
+            print("❌ Error setting brightness: ", end="")
+            try:
+                print(response.json()["message"])
+            except Exception as e:
+                print(e)
 
 
 
