@@ -198,3 +198,14 @@ class DBController:
             }
         finally:
             db.close()
+
+    def get_api_key_id_by_key(self, key: str):
+        db = SessionLocal()
+        try:
+            locate_the_key = db.query(APIKey).filter(APIKey.key == key).first()
+            if locate_the_key:
+                return locate_the_key.key_id if locate_the_key else None
+        except SQLAlchemyError as e:
+            db.rollback()
+        finally:
+            db.close()
