@@ -20,7 +20,7 @@ class APIKeyRequest(BaseModel):
 @router.post("/get-devices")
 async def get_devices(payload: APIKeyRequest):
     goveeKey = payload.goveeKey
-    return {message: goveeKey}
+    return {"message": goveeKey}
 
 
 
