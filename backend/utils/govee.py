@@ -92,8 +92,7 @@ class Govee():
         if response.status_code == 200:
             print(response.json())
         else:
-            state = "on" if on else "off"
-            print(f"❌Error during setting {state}: ", end="")
+            print(f"❌Error during setting color: ", end="")
             try:
                 result = response.json()
                 print(result["message"])
