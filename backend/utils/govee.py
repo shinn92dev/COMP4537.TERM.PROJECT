@@ -41,13 +41,10 @@ class Govee():
     def _is_connected(self):
         return self.devices_num
 
-    def turn_on_and_off(self, device_number: int, on=True):
+    def turn_on_and_off(self, device: dict, on=True):
         url = self.base_url + "control"
-        device = self.devices[device_number - 1]
-        print(device)
         payload = {
             "requestId": str(uuid.uuid4()),
-
             "sku": device["model"],
             "device": device["device"],
             "model": device["model"],
@@ -74,10 +71,67 @@ class Govee():
             except Exception as e:
                 print(e)
 
+    def set_lamp_color(self, device, color):
+        url = self.base_url + "control"
+        payload = {
+            "requestId": str(uuid.uuid4()),
+            "sku": device["model"],
+            "device": device["device"],
+            "model": device["model"],
+            "cmd": {
+            "name": "color",
+            "value": {
+                "r": color["r"],
+                "g": color["g"],
+                "b": color["b"]
+            }
+        }
+        }
+        response = requests.put(url, headers=self.headers, json=payload)
+        time.sleep(1)
+        if response.status_code == 200:
+            print(response.json())
+        else:
+            print(f"❌Error during setting color: ", end="")
+            try:
+                result = response.json()
+                print(result["message"])
+            except Exception as e:
+                print(e)
+
+
+    def set_lamp_brightness(self, device: dict, brightness: int):
+        url = self.base_url + "control"
+        payload = {
+        "requestId": str(uuid.uuid4()),
+            "sku": device["model"],
+            "device": device["device"],
+            "model": device["model"],
+            "cmd": {
+                "name": "brightness",
+                "value": brightness
+            }
+        }
+
+        response = requests.put(url, headers=self.headers, json=payload)
+        time.sleep(1)
+
+        if response.status_code == 200:
+            print(f"💡 Brightness set to {brightness} successfully.")
+            print(response.json())
+        else:
+            print("❌ Error setting brightness: ", end="")
+            try:
+                print(response.json()["message"])
+            except Exception as e:
+                print(e)
+
+
 
 def main():
     g = Govee(key)
-    g.turn_on_and_off(1, False)
+    print(g.get_govee_devices())
+
     # for i in (range(5)):
     #     condition = True if i % 2 == 0 else False
     #     g.turn_on_and_off(1, condition)

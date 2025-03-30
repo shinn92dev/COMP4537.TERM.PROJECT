@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 import jwt
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 from fastapi import HTTPException, status, Request
-from fastapi.security import OAuth2PasswordBearer
 from crud import DBController
 from schemas import TokenData
 import logging
@@ -19,8 +18,6 @@ logger = logging.getLogger(__name__)
 
 logger.info(f"SECRET_KEY loaded: {'Yes' if SECRET_KEY else 'No'}")
 logger.info(f"ALGORITHM: {ALGORITHM}")
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 if not SECRET_KEY:
     raise ValueError(
@@ -73,12 +70,12 @@ async def get_current_user(request: Request):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         logger.info(f"Token decoded successfully: {payload}")
         
-        user_id = int(payload.get("sub"))
-        logger.info(f"User ID from token: {user_id}")
-        
-        if not user_id:
+        sub = payload.get("sub")
+        if sub is None:
             logger.warning("No user_id found in token payload")
             raise credential_exception
+        
+        user_id = int(sub)
             
         token_data = TokenData(user_id=user_id)
         logger.info(f"TokenData created: {token_data}")
@@ -146,12 +143,13 @@ async def get_current_user_id(request: Request):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         logger.info(f"Token decoded successfully: {payload}")
         
-        user_id = int(payload.get("sub"))
-        logger.info(f"User ID from token: {user_id}")
-        
-        if not user_id:
+        sub = payload.get("sub")
+        if sub is None:
             logger.warning("No user_id found in token payload")
             raise credential_exception
+        
+        user_id = int(sub)
+        logger.info(f"User ID from token: {user_id}")
         
         return user_id
     
