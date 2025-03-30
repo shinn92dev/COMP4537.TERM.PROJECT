@@ -7,7 +7,7 @@ from datetime import timedelta
 from dotenv import load_dotenv
 import os
 from pydantic import BaseModel
-
+from utils.govee import Govee
 load_dotenv()
 
 ENV = os.getenv("ENV", "development")
@@ -17,11 +17,20 @@ router = APIRouter()
 class APIKeyRequest(BaseModel):
     goveeKey: str
 
+
 @router.post("/get-devices")
 async def get_devices(payload: APIKeyRequest):
-    goveeKey = payload.goveeKey
-    return {"message": goveeKey}
-
+    govee_key = payload.goveeKey
+    goveeController = Govee(govee_key)
+    devices = goveeController.get_govee_devices
+    if devices:
+        return {"success": true,  "message": "Devices fected successfully.", "data": {"devices": devices}}
+    else:
+        raise HTTPException(
+            status_code=500
+            detail="Fetching devices fail",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
 
 
 @router.post("/token")
