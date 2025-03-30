@@ -43,10 +43,8 @@ class Govee():
 
     def turn_on_and_off(self, device: dict, on=True):
         url = self.base_url + "control"
-        print(device)
         payload = {
             "requestId": str(uuid.uuid4()),
-
             "sku": device["model"],
             "device": device["device"],
             "model": device["model"],
@@ -72,6 +70,36 @@ class Govee():
                 print(result["message"])
             except Exception as e:
                 print(e)
+
+    def set_lamp_color(self, device, color):
+        url = self.base_url + "control"
+        payload = {
+            "requestId": str(uuid.uuid4()),
+            "sku": device["model"],
+            "device": device["device"],
+            "model": device["model"],
+            "cmd": {
+            "name": "color",
+            "value": {
+                "r": color["r"],
+                "g": color["g"],
+                "b": color["b"]
+            }
+        }
+        }
+        response = requests.put(url, headers=self.headers, json=payload)
+        time.sleep(1)
+        if response.status_code == 200:
+            print(response.json())
+        else:
+            state = "on" if on else "off"
+            print(f"❌Error during setting {state}: ", end="")
+            try:
+                result = response.json()
+                print(result["message"])
+            except Exception as e:
+                print(e)
+
 
 
 def main():
