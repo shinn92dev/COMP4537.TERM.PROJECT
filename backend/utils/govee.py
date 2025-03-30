@@ -41,9 +41,8 @@ class Govee():
     def _is_connected(self):
         return self.devices_num
 
-    def turn_on_and_off(self, device_number: int, on=True):
+    def turn_on_and_off(self, device: dict, on=True):
         url = self.base_url + "control"
-        device = self.devices[device_number - 1]
         print(device)
         payload = {
             "requestId": str(uuid.uuid4()),

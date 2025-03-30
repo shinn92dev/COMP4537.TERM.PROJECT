@@ -32,6 +32,17 @@ async def get_devices(payload: APIKeyRequest):
             headers={"WWW-Authenticate": "Bearer"}
         )
 
+class GoveeControlRequest(BaseModel):
+    goveeKey: str
+    device: dict
+
+@roter.get("/turn-on-off")
+async def turn_on_and_off(payload: APIKeyRequest):
+    govee_key = payload.goveeKey
+    device = payload.device
+    goveeController = Govee(govee_key)
+    goveeController.turn_on_and_off(device)
+
 
 @router.post("/token")
 async def login_for_access_token(
