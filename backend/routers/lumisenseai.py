@@ -48,14 +48,14 @@ async def turn_on_and_off(payload: GoveeControlRequest):
     print(is_on)
 
 
-class GoveeControlRequest(BaseModel):
+class GoveeColorControlRequest(BaseModel):
     goveeKey: str
     device: dict
     color: dict
 
 
 @router.post("/set-color")
-async dev set_color(payload: GoveeControlRequest):
+async def set_color(payload: GoveeColorControlRequest):
     govee_key = payload.goveeKey
     device = payload.device
     color = payload.color
