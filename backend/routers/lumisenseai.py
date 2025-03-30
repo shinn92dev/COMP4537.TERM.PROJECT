@@ -156,7 +156,7 @@ async def set_color_by_ai(payload: GoveeAIControlRequest):
         device = payload.device
         emotion = payload.emotion
         time = payload.time
-        add_req = payload.add_req
+        add_req = payload.addReq
 
         if not emotion:
             raise HTTPException(status_code=400, detail="Emotion is required.")
