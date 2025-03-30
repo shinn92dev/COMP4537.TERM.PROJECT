@@ -37,7 +37,7 @@ class GoveeControlRequest(BaseModel):
     device: dict
 
 @roter.get("/turn-on-off")
-async def turn_on_and_off(payload: APIKeyRequest):
+async def turn_on_and_off(payload: GoveeControlRequest):
     govee_key = payload.goveeKey
     device = payload.device
     goveeController = Govee(govee_key)
