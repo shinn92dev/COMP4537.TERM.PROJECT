@@ -44,6 +44,7 @@ async def turn_on_and_off(payload: GoveeControlRequest):
     is_on: payload.isOn
     goveeController = Govee(govee_key)
     goveeController.turn_on_and_off(device, is_on)
+    print(is_on)
 
 
 @router.post("/token")
