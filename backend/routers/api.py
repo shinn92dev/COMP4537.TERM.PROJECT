@@ -85,7 +85,7 @@ async def generate_api_key(body: GenerateAPIKeyRequest):
     }
 
 
-class DeleteAPIKeyRequest(BaseModel)
+class DeleteAPIKeyRequest(BaseModel):
     user_id: int
 
 
