@@ -24,10 +24,10 @@ async def get_devices(payload: APIKeyRequest):
     goveeController = Govee(govee_key)
     devices = goveeController.get_govee_devices
     if devices:
-        return {"success": true,  "message": "Devices fected successfully.", "data": {"devices": devices}}
+        return {"success": True,  "message": "Devices fected successfully.", "data": {"devices": devices}}
     else:
         raise HTTPException(
-            status_code=500
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Fetching devices fail",
             headers={"WWW-Authenticate": "Bearer"}
         )
