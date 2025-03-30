@@ -35,13 +35,15 @@ async def get_devices(payload: APIKeyRequest):
 class GoveeControlRequest(BaseModel):
     goveeKey: str
     device: dict
+    is_on: bool
 
 @router.post("/turn-on-off")
 async def turn_on_and_off(payload: GoveeControlRequest):
     govee_key = payload.goveeKey
     device = payload.device
+    is_on: payload.isOn
     goveeController = Govee(govee_key)
-    goveeController.turn_on_and_off(device)
+    goveeController.turn_on_and_off(device, is_on)
 
 
 @router.post("/token")
