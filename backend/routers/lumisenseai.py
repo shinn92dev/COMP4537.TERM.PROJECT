@@ -60,8 +60,22 @@ async def set_color(payload: GoveeColorControlRequest):
     device = payload.device
     color = payload.color
     goveeController = Govee(govee_key)
-    goveeController.set_color(device, color)
+    goveeController.set_lamp_color(device, color)
 
+
+class GoveeBrightnessControlRequest(BaseModel):
+    goveeKey: str
+    device: dict
+    brightness: int
+
+
+@router.post("/set-brightness")
+async def set_brightness(payload: GoveeBrightnessControlRequest):
+    govee_key = payload.goveeKey
+    device = payload.device
+    brightness = payload.brightness
+    goveeController = Govee(govee_key)
+    goveeController.set_lamp_brightness(device, brightness)
 
 
 @router.post("/token")
