@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
 from routers import ai, test, api, auth, register, users, user_usage, admin_usage, admin_stats, lumisenseai
 import models  # noqa: F401
+from usage_middleware import UsageMiddleware
 
 load_dotenv()
 BASE_URL = os.getenv("BASE_PREFIX", "")
@@ -50,10 +51,14 @@ def create_app():
     app.include_router(admin_stats.router, prefix=f"{BASE_URL}/admin/stats", tags=["admin_stats"])
     app.include_router(lumisenseai.router, prefix=f"{BASE_URL}/lumisenseai", tags=["lumisenseai"])
 
+
     # Initialize Database
     try:
         Base.metadata.create_all(bind=engine)
         print("✅ Database initialized successfully!")
     except Exception as e:
         print(f"⚠️ Database initialization failed: {e}")
+
+    app.add_middleware(UsageMiddleware)
+    
     return app

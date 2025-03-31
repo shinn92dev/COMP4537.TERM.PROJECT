@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from database import SessionLocal
-from models import User, APIKey
+from models import User, APIKey, APIUsage
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from schemas import UserInDB
@@ -118,6 +118,7 @@ class DBController:
                 ).first()
 
             if matching:
+                db.query(APIUsage).filter(APIUsage.key_id == matching.key_id).delete()
                 db.delete(matching)
                 db.commit()
                 return True
@@ -196,5 +197,16 @@ class DBController:
                 "success": False,
                 "message": f"An error occurred: {str(e)}"
             }
+        finally:
+            db.close()
+
+    def get_api_key_id_by_key(self, key: str):
+        db = SessionLocal()
+        try:
+            locate_the_key = db.query(APIKey).filter(APIKey.key == key).first()
+            if locate_the_key:
+                return locate_the_key.key_id if locate_the_key else None
+        except SQLAlchemyError as e:
+            db.rollback()
         finally:
             db.close()
