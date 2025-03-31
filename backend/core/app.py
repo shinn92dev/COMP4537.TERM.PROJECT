@@ -14,7 +14,11 @@ print(f"🔴🟥Debugging base url: {BASE_URL}")
 
 
 def create_app():
-    app = FastAPI()
+    app = FastAPI(
+        openapi_url=f"{BASE_URL}/openapi.json",
+        docs_url=f"{BASE_URL}/docs",
+        redoc_url=f"{BASE_URL}/redoc"
+    )
 
     # CORS
     app.add_middleware(
