@@ -59,5 +59,5 @@ def create_app():
         print(f"⚠️ Database initialization failed: {e}")
 
     app.add_middleware(UsageMiddleware)
-    
+
     return app
