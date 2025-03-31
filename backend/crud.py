@@ -211,41 +211,44 @@ class DBController:
         finally:
             db.close()
 
-    def increase_api_usage_count(api_key: str, method: str, endpoint: str):
+    def increase_api_usage_count(self, api_key: str, method: str, endpoint: str):
         db = SessionLocal()
         try:
             key = db.query(APIKey).filter(APIKey.key == api_key).first()
             if not key:
                 return {"success": False, "message": "API Key not found."}
 
+            key_id = key.key_id
             method_enum = HTTPMethodEnum[method.upper()]
 
             usage = db.query(APIUsage).filter_by(
-                key_id=key.key_id,
+                key_id=key_id,
                 method=method_enum,
                 endpoint=endpoint
             ).first()
 
             if usage:
                 usage.count += 1
+                message = "Usage count incremented."
             else:
                 usage = APIUsage(
-                    key_id=key.key_id,
+                    key_id=key_id,
                     method=method_enum,
                     endpoint=endpoint,
                     count=1
                 )
                 db.add(usage)
+                message = "New usage record created."
 
             db.commit()
-            return {"success": True, "message": "API usage count updated."}
+            return {"success": True, "message": message}
 
         except SQLAlchemyError as e:
             db.rollback()
             return {"success": False, "message": f"Database error: {str(e)}"}
-
         finally:
             db.close()
+
 
     def get_all_api_keys(self) -> list[str]:
         db = SessionLocal()
