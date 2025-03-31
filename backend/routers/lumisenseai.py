@@ -17,17 +17,25 @@ class APIKeyRequest(BaseModel):
 
 @router.post("/get-devices")
 async def get_devices(payload: APIKeyRequest):
-    govee_key = payload.goveeKey
-    goveeController = Govee(govee_key)
-    devices = goveeController.get_govee_devices()
-    if devices:
-        return {"success": True,  "message": "Devices fected successfully.", "data": {"devices": devices}}
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Fetching devices fail",
-            headers={"WWW-Authenticate": "Bearer"}
-        )
+    try:
+        govee_key = payload.goveeKey
+        if not govee_key:
+            raise HTTPException(status_code=400, detail="Missing Govee API key.")
+        goveeController = Govee(govee_key)
+        devices = goveeController.get_govee_devices()
+
+        if not devices:
+            raise HTTPException(status_code=404, detail="No devices found for the given key.")
+
+        return {
+            "success": True,
+            "message": "Devices fetched successfully.",
+            "data": {"devices": devices}
+        }
+    except Exception as e:
+        print("❌ Error in get-devices:", e)
+        raise HTTPException(status_code=500, detail="Failed to fetch devices.")
+
 
 class GoveeControlRequest(BaseModel):
     goveeKey: str
@@ -37,12 +45,15 @@ class GoveeControlRequest(BaseModel):
 
 @router.post("/turn-on-off")
 async def turn_on_and_off(payload: GoveeControlRequest):
-    govee_key = payload.goveeKey
-    device = payload.device
-    is_on = payload.isOn
-    goveeController = Govee(govee_key)
-    goveeController.turn_on_and_off(device, is_on)
-    print(is_on)
+    try:
+        goveeController = Govee(payload.goveeKey)
+        result = goveeController.turn_on_and_off(payload.device, payload.isOn)
+        if not result:
+            raise HTTPException(status_code=400, detail="Failed to change power state.")
+        return {"message": "Device state updated."}
+    except Exception as e:
+        print("❌ Error in turn-on-off:", e)
+        raise HTTPException(status_code=500, detail="Failed to change device power state.")
 
 
 class GoveeColorControlRequest(BaseModel):
@@ -53,11 +64,15 @@ class GoveeColorControlRequest(BaseModel):
 
 @router.post("/set-color")
 async def set_color(payload: GoveeColorControlRequest):
-    govee_key = payload.goveeKey
-    device = payload.device
-    color = payload.color
-    goveeController = Govee(govee_key)
-    goveeController.set_lamp_color(device, color)
+    try:
+        goveeController = Govee(payload.goveeKey)
+        result = goveeController.set_lamp_color(payload.device, payload.color)
+        if not result:
+            raise HTTPException(status_code=400, detail="Failed to update color.")
+        return {"message": "Color updated successfully."}
+    except Exception as e:
+        print("❌ Error in set-color:", e)
+        raise HTTPException(status_code=500, detail="Failed to set color.")
 
 
 class GoveeBrightnessControlRequest(BaseModel):
@@ -68,11 +83,17 @@ class GoveeBrightnessControlRequest(BaseModel):
 
 @router.post("/set-brightness")
 async def set_brightness(payload: GoveeBrightnessControlRequest):
-    govee_key = payload.goveeKey
-    device = payload.device
-    brightness = payload.brightness
-    goveeController = Govee(govee_key)
-    goveeController.set_lamp_brightness(device, brightness)
+    try:
+        if payload.brightness < 1 or payload.brightness > 100:
+            raise HTTPException(status_code=400, detail="Brightness must be between 1 and 100.")
+        goveeController = Govee(payload.goveeKey)
+        result = goveeController.set_lamp_brightness(payload.device, payload.brightness)
+        if not result:
+            raise HTTPException(status_code=400, detail="Failed to update brightness.")
+        return {"message": "Brightness updated successfully."}
+    except Exception as e:
+        print("❌ Error in set-brightness:", e)
+        raise HTTPException(status_code=500, detail="Failed to set brightness.")
 
 
 class GoveeAIControlRequest(BaseModel):
@@ -100,29 +121,27 @@ def hex_to_rgb(hex_code: str) -> dict:
 @router.post("/set-color-by-ai")
 async def set_color_by_ai(payload: GoveeAIControlRequest):
     try:
-        govee_key = payload.goveeKey
-        device = payload.device
-        emotion = payload.emotion
-        time = payload.time
-        add_req = payload.addReq
-
-        if not emotion:
+        if not payload.emotion:
             raise HTTPException(status_code=400, detail="Emotion is required.")
+        if not payload.time:
+            raise HTTPException(status_code=400, detail="Time is required.")
 
-        prompt_parts = [f"Emotion: {emotion}, Time: {time}"]
-
-        if add_req:
-            prompt_parts.append(f"Request: {add_req}")
-
+        prompt_parts = [f"Emotion: {payload.emotion}", f"Time: {payload.time}"]
+        if payload.addReq:
+            prompt_parts.append(f"Request: {payload.addReq}")
         prompt = ", ".join(prompt_parts)
 
-
         answer = ask_to_ai_rag(prompt)
-        govee_controller = Govee(govee_key)
-        govee_controller.set_lamp_color(device, hex_to_rgb(answer["color"]))
+        if "color" not in answer:
+            raise HTTPException(status_code=422, detail="AI failed to return a valid color.")
+
+        rgb_color = hex_to_rgb(answer["color"])
+        govee_controller = Govee(payload.goveeKey)
+        govee_controller.set_lamp_color(payload.device, rgb_color)
+
         return {
             "status": "success",
-            "message": "Request processed successfully.",
+            "message": "AI color suggestion applied.",
             "prompt": prompt,
             "data": answer,
         }
@@ -131,9 +150,5 @@ async def set_color_by_ai(payload: GoveeAIControlRequest):
         raise e
     except Exception as e:
         print("❌ Unexpected error:", e)
-        raise HTTPException(status_code=500, detail="Internal server error")
-
-
-
-if __name__ == "__main__":
-    ask_to_ai_rag("Emotion: Happy, Time: 12:30, Additional Request: I want to be happy.")
+        raise HTTPException(status_code=500, detail="Internal server error.")
+    
