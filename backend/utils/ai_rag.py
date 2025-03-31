@@ -18,7 +18,7 @@ except requests.exceptions.ConnectionError:
 
 llm = OllamaLLM(model="llama3.2")
 
-loader = DirectoryLoader("./store", glob="*.txt", loader_cls=lambda path: TextLoader(path, encoding="utf-8"))
+loader = DirectoryLoader("./utils/store", glob="*.txt", loader_cls=lambda path: TextLoader(path, encoding="utf-8"))
 documents = loader.load()
 
 if not documents:
