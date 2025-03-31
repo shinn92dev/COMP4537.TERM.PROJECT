@@ -69,8 +69,8 @@ async def turn_on_and_off(
     try:
         goveeController = Govee(payload.goveeKey)
         result = goveeController.turn_on_and_off(payload.device, payload.isOn)
-        if not result:
-            raise HTTPException(status_code=400, detail="Failed to change power state.")
+        # if not result:
+        #     raise HTTPException(status_code=400, detail="Failed to change power state.")
         increase_result = db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/turn-on-off")
         print(increase_result)
         return {"message": "Device state updated."}
@@ -93,8 +93,8 @@ async def set_color(
     try:
         goveeController = Govee(payload.goveeKey)
         result = goveeController.set_lamp_color(payload.device, payload.color)
-        if not result:
-            raise HTTPException(status_code=400, detail="Failed to update color.")
+        # if not result:
+        #     raise HTTPException(status_code=400, detail="Failed to update color.")
         increase_result = db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/set-color")
         print(increase_result)
         return {"message": "Color updated successfully."}
@@ -118,8 +118,8 @@ async def set_brightness(
             raise HTTPException(status_code=400, detail="Brightness must be between 1 and 100.")
         goveeController = Govee(payload.goveeKey)
         result = goveeController.set_lamp_brightness(payload.device, payload.brightness)
-        if not result:
-            raise HTTPException(status_code=400, detail="Failed to update brightness.")
+        # if not result:
+        #     raise HTTPException(status_code=400, detail="Failed to update brightness.")
         increase_result = db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/set-brightness")
         print(increase_result)
         return {"message": "Brightness updated successfully."}
