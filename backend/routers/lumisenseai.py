@@ -42,6 +42,8 @@ async def get_devices(
 
         if not devices:
             raise HTTPException(status_code=404, detail="No devices found for the given key.")
+        increase_result = db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/get-devices")
+        print(increase_result)
 
         return {
             "success": True,
@@ -69,7 +71,8 @@ async def turn_on_and_off(
         result = goveeController.turn_on_and_off(payload.device, payload.isOn)
         if not result:
             raise HTTPException(status_code=400, detail="Failed to change power state.")
-        db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/turn-on-off")
+        increase_result = db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/turn-on-off")
+        print(increase_result)
         return {"message": "Device state updated."}
     except Exception as e:
         print("❌ Error in turn-on-off:", e)
@@ -92,7 +95,8 @@ async def set_color(
         result = goveeController.set_lamp_color(payload.device, payload.color)
         if not result:
             raise HTTPException(status_code=400, detail="Failed to update color.")
-        db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/set-color")
+        increase_result = db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/set-color")
+        print(increase_result)
         return {"message": "Color updated successfully."}
     except Exception as e:
         print("❌ Error in set-color:", e)
@@ -116,7 +120,8 @@ async def set_brightness(
         result = goveeController.set_lamp_brightness(payload.device, payload.brightness)
         if not result:
             raise HTTPException(status_code=400, detail="Failed to update brightness.")
-        db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/set-brightness")
+        increase_result = db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/set-brightness")
+        print(increase_result)
         return {"message": "Brightness updated successfully."}
     except Exception as e:
         print("❌ Error in set-brightness:", e)
@@ -168,7 +173,8 @@ async def set_color_by_ai(
         rgb_color = hex_to_rgb(answer["color"])
         govee_controller = Govee(payload.goveeKey)
         govee_controller.set_lamp_color(payload.device, rgb_color)
-        db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/set-color-by-ai")
+        increase_result = db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/set-color-by-ai")
+        print(increase_result)
         return {
             "status": "success",
             "message": "AI color suggestion applied.",

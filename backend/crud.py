@@ -212,6 +212,7 @@ class DBController:
             db.close()
 
     def increase_api_usage_count(self, api_key: str, method: str, endpoint: str):
+        print(f"🍕🍕🍕 api_key: {api_key}, method: {method}, endpoint: {endpoint}")
         db = SessionLocal()
         try:
             key = db.query(APIKey).filter(APIKey.key == api_key).first()
