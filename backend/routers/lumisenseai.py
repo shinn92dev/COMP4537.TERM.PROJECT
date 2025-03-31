@@ -17,7 +17,9 @@ db_controller = DBController()
 async def get_service_api_key(x_service_api_key: str = Header(...)):
     if x_service_api_key != os.getenv("MY_SERVICE_API_KEY"):
         raise HTTPException(status_code=403, detail="Invalid or missing service API key.")
-    return x_service_api_key
+    all_keys = db_controller.get_all_api_keys()
+    if x_service_api_key in all_keys:
+        return x_service_api_key
 
 
 class APIKeyRequest(BaseModel):

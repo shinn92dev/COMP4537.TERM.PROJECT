@@ -246,3 +246,11 @@ class DBController:
 
         finally:
             db.close()
+
+    def get_all_api_keys() -> list[str]:
+        db = SessionLocal()
+        try:
+            keys = db.query(APIKey.key).all()
+            return [k[0] for k in keys]
+        finally:
+            db.close()
