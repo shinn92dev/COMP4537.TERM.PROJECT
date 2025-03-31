@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from database import SessionLocal
-from models import User, APIKey
+from models import User, APIKey, APIUsage
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from schemas import UserInDB
@@ -118,6 +118,7 @@ class DBController:
                 ).first()
 
             if matching:
+                db.query(APIUsage).filter(APIUsage.key_id == matching.key_id).delete()
                 db.delete(matching)
                 db.commit()
                 return True
