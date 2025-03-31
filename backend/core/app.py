@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
 from routers import test, api, auth, register, users, user_usage, admin_usage, admin_stats, lumisenseai
 import models  # noqa: F401
-from usage_middleware import UsageMiddleware
+from core.usage_middleware import UsageMiddleware
 
 load_dotenv()
 BASE_URL = os.getenv("BASE_PREFIX", "")

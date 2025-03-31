@@ -247,7 +247,7 @@ class DBController:
         finally:
             db.close()
 
-    def get_all_api_keys() -> list[str]:
+    def get_all_api_keys(self) -> list[str]:
         db = SessionLocal()
         try:
             keys = db.query(APIKey.key).all()
