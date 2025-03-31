@@ -1,22 +1,34 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, Header
+from backend.crud import DBController
 from backend.utils.ai_rag import ask_to_ai_rag
 from dotenv import load_dotenv
 import os
 from pydantic import BaseModel
 from utils.govee import Govee
+from fastapi import Header, Depends, HTTPException
 
 load_dotenv()
 
 ENV = os.getenv("ENV", "development")
 
 router = APIRouter()
+db_controller = DBController()
+
+async def get_service_api_key(x_service_api_key: str = Header(...)):
+    if x_service_api_key != os.getenv("MY_SERVICE_API_KEY"):
+        raise HTTPException(status_code=403, detail="Invalid or missing service API key.")
+    return x_service_api_key
+
 
 class APIKeyRequest(BaseModel):
     goveeKey: str
 
 
 @router.post("/get-devices")
-async def get_devices(payload: APIKeyRequest):
+async def get_devices(
+    payload: APIKeyRequest,
+    api_key: str = Depends(get_service_api_key)
+):
     try:
         govee_key = payload.goveeKey
         if not govee_key:
@@ -44,12 +56,16 @@ class GoveeControlRequest(BaseModel):
 
 
 @router.post("/turn-on-off")
-async def turn_on_and_off(payload: GoveeControlRequest):
+async def turn_on_and_off(
+    payload: GoveeControlRequest,
+    api_key: str = Depends(get_service_api_key)
+):
     try:
         goveeController = Govee(payload.goveeKey)
         result = goveeController.turn_on_and_off(payload.device, payload.isOn)
         if not result:
             raise HTTPException(status_code=400, detail="Failed to change power state.")
+        db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/turn-on-off")
         return {"message": "Device state updated."}
     except Exception as e:
         print("❌ Error in turn-on-off:", e)
@@ -63,12 +79,16 @@ class GoveeColorControlRequest(BaseModel):
 
 
 @router.post("/set-color")
-async def set_color(payload: GoveeColorControlRequest):
+async def set_color(
+    payload: GoveeColorControlRequest,
+    api_key: str = Depends(get_service_api_key)
+):
     try:
         goveeController = Govee(payload.goveeKey)
         result = goveeController.set_lamp_color(payload.device, payload.color)
         if not result:
             raise HTTPException(status_code=400, detail="Failed to update color.")
+        db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/set-color")
         return {"message": "Color updated successfully."}
     except Exception as e:
         print("❌ Error in set-color:", e)
@@ -82,7 +102,9 @@ class GoveeBrightnessControlRequest(BaseModel):
 
 
 @router.post("/set-brightness")
-async def set_brightness(payload: GoveeBrightnessControlRequest):
+async def set_brightness(
+    payload: GoveeBrightnessControlRequest,
+    api_key: str = Depends(get_service_api_key)):
     try:
         if payload.brightness < 1 or payload.brightness > 100:
             raise HTTPException(status_code=400, detail="Brightness must be between 1 and 100.")
@@ -90,6 +112,7 @@ async def set_brightness(payload: GoveeBrightnessControlRequest):
         result = goveeController.set_lamp_brightness(payload.device, payload.brightness)
         if not result:
             raise HTTPException(status_code=400, detail="Failed to update brightness.")
+        db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/set-brightness")
         return {"message": "Brightness updated successfully."}
     except Exception as e:
         print("❌ Error in set-brightness:", e)
@@ -119,7 +142,10 @@ def hex_to_rgb(hex_code: str) -> dict:
 
 
 @router.post("/set-color-by-ai")
-async def set_color_by_ai(payload: GoveeAIControlRequest):
+async def set_color_by_ai(
+    payload: GoveeAIControlRequest,
+    api_key: str = Depends(get_service_api_key)
+):
     try:
         if not payload.emotion:
             raise HTTPException(status_code=400, detail="Emotion is required.")
@@ -138,7 +164,7 @@ async def set_color_by_ai(payload: GoveeAIControlRequest):
         rgb_color = hex_to_rgb(answer["color"])
         govee_controller = Govee(payload.goveeKey)
         govee_controller.set_lamp_color(payload.device, rgb_color)
-
+        db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/set-color-by-ai")
         return {
             "status": "success",
             "message": "AI color suggestion applied.",
