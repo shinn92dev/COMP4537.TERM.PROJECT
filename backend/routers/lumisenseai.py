@@ -73,7 +73,10 @@ async def turn_on_and_off(
         #     raise HTTPException(status_code=400, detail="Failed to change power state.")
         increase_result = db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/turn-on-off")
         print(increase_result)
-        return {"message": "Device state updated."}
+        return {
+            "success": True,
+            "message": "Devices turn on or off operation was done successfully",
+        }
     except Exception as e:
         print("❌ Error in turn-on-off:", e)
         raise HTTPException(status_code=500, detail="Failed to change device power state.")
@@ -97,7 +100,10 @@ async def set_color(
         #     raise HTTPException(status_code=400, detail="Failed to update color.")
         increase_result = db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/set-color")
         print(increase_result)
-        return {"message": "Color updated successfully."}
+        return {
+            "success": True,
+            "message": "Devices color setting operation was done successfully",
+        }
     except Exception as e:
         print("❌ Error in set-color:", e)
         raise HTTPException(status_code=500, detail="Failed to set color.")
@@ -122,7 +128,10 @@ async def set_brightness(
         #     raise HTTPException(status_code=400, detail="Failed to update brightness.")
         increase_result = db_controller.increase_api_usage_count(api_key=api_key, method="POST", endpoint="/api/v1/lumisenseai/set-brightness")
         print(increase_result)
-        return {"message": "Brightness updated successfully."}
+        return {
+            "success": True,
+            "message": "Devices brightness setting operation was done successfully",
+        }
     except Exception as e:
         print("❌ Error in set-brightness:", e)
         raise HTTPException(status_code=500, detail="Failed to set brightness.")
@@ -177,6 +186,7 @@ async def set_color_by_ai(
         print(increase_result)
         return {
             "status": "success",
+            "success": True,
             "message": "AI color suggestion applied.",
             "prompt": prompt,
             "data": answer,
