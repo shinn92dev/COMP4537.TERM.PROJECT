@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, Header
-from backend.crud import DBController
-from backend.utils.ai_rag import ask_to_ai_rag
+from crud import DBController
+from utils.ai_rag import ask_to_ai_rag
 from dotenv import load_dotenv
 import os
 from pydantic import BaseModel
