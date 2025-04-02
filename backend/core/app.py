@@ -20,19 +20,6 @@ def create_app():
         redoc_url=f"{BASE_URL}/redoc"
     )
 
-    @app.get("/all-endpoints")
-    def list_all_endpoints():
-        endpoints = []
-        for route in app.routes:
-            if route.path.startswith("/docs") or route.path.startswith("/openapi"):
-                continue
-
-            endpoints.append({
-                "path": route.path,
-                "methods":list(route.methods)
-            })
-        return endpoints
-
     # CORS
     app.add_middleware(
         CORSMiddleware,
