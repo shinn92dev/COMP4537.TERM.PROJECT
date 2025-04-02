@@ -1,3 +1,5 @@
+# This code was developed with the assistance of ChatGPT.
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List

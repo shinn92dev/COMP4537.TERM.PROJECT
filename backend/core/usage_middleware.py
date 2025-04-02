@@ -1,3 +1,5 @@
+# This code was developed with the assistance of ChatGPT.
+
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from fastapi import Request, Response
 from crud import DBController

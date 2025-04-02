@@ -1,3 +1,5 @@
+# This code was developed with the assistance of ChatGPT.
+
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Annotated
 from utils.jwt_handler import get_current_user_id
